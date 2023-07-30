@@ -2,7 +2,7 @@
 
 import math 
 
-moprt = ['+','-','/','*','%']
+moprt = ['+','-','/','*','%', '^']
 trigop = ['tan', 'sin', 'cos' , 'cot' , 'sec', 'cosec']
 while True:
     oprt = input('What operation do you want to perform ? ')
@@ -13,30 +13,58 @@ while True:
     elif oprt in trigop:
         theta = input('Enter theta ')
 
-    out = None
+    out = 'Not possible'
+
     if oprt == '+':
         out = float(num1) + float(num2)
     elif oprt == '-':
         out = float(num1) - float(num2)
     elif oprt == '/':
-        out = float(num1) / float(num2)
+        try:
+            out = float(num1) / float(num2)
+        except:
+            pass
+    elif oprt == '^':
+        try:
+            out = float(num1) ** float(num2)
+        except:
+            pass
     elif oprt == '*':
         out = float(num1) * float(num2)
     elif oprt == '%':
         out = float(num1) % float(num2)
     elif oprt == 'tan':
-        out = math.tan(float(theta))
+        try:
+            out = math.tan(float(theta))
+        except:
+            pass
     elif oprt == 'sin':
-        out = math.sin(float(theta))
+        try:
+            out = math.sin(float(theta))
+        except:
+            pass
     elif oprt == 'cos':
-        out = math.cos(float(theta))
+        try:
+            out = math.cos(float(theta))
+        except:
+            pass
     elif oprt == 'cosec':
-        out = math.asin(float(theta))
+        try:
+            out = math.asin(float(theta))
+        except:
+            pass
     elif oprt == 'cot':
-        out = math.atan(float(theta))
+        try:
+            out = math.atan(float(theta))
+        except:
+            pass
     elif oprt == 'sec':
-        out = math.acos(float(theta))
-   
+        try:
+            out = math.acos(float(theta))
+        except:
+            pass
+    elif oprt == 'exit':
+        break
     else:
         pass
 
