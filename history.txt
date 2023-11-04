@@ -1,0 +1,76 @@
+docker ps
+clear
+cd ~
+sudo su
+python3
+clear
+sudo su
+service
+sudo service restart ssh
+sshd
+sudo cp /etc/ssh/sshd_config{,.bak}
+sudo nano /etc/ssh/sshd_config
+clear
+cd ~
+ls -al
+clear
+history
+df -H
+exit
+cd ~
+clear
+vim
+clear
+pkg uninstall python
+clear
+exit
+docker networks
+docker ps
+exit
+docker ps
+exit
+clear
+cd ~
+git
+clear
+vnc
+x11-vnc
+exit
+cd ~
+sudo apt install xfce4 xfce4-goodies
+sudo apt update
+sudo apt install xfce4 xfce4-goodies
+sudo apt install tightvncserver
+vncserver
+vncserver -kill :1
+mv ~/.vnc/xstartup ~/.vnc/xstartup.bak
+nano ~/.vnc/xstartup
+chmod +x ~/.vnc/xstartup
+vncserver -localhost
+gh cs ssh
+exit
+cd ~
+ls
+df -H
+historu
+history
+exit
+ls
+history
+echo "hello"
+clear
+docker
+code
+ros
+echo "hello"
+history
+cd ~
+history 
+sudo apt install pcmanfm
+history
+exit
+history
+exit
+hisory
+history
+exit
