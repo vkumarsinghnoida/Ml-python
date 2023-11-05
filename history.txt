@@ -74,3 +74,109 @@ exit
 hisory
 history
 exit
+cd ~
+ls -a
+rm .bash_history 
+cp /workspaces/Ml-python/history.txt .bash_history
+history
+exit
+history 
+cd ~
+df -H
+history -h
+sudo apt update
+nano ~/.vnc/xstartup 
+nano ~/.vnc/xstartup  40
+nano ~/.vnc/xstartup  40 30
+clear
+history
+sudo apt install xfce4 xfce4-goodies
+history
+sudo apt install tightvncserver                              44  vncserver                                                    45  vncserver -kill :1
+sudo apt install tightvncserver                      
+vncserver
+vncserver -kill :1
+mv ~/.vnc/xstartup ~/.vnc/xstartup.bak
+nano ~/.vnc/xstartup
+chmod +x ~/.vnc/xstartup
+vncserver -localhost
+exit
+ls
+history
+exit
+vncserver
+cd ~
+ls -a
+nano .bashrc
+vncserver
+cd ~
+sudo apt-get install ros-galactic-ros-gz
+cd ~
+xhost +
+clear
+locale
+sudo apt install software-properties-common
+sudo add-apt-repository universe
+sudo apt update && sudo apt install curl
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+sudo apt update
+sudo apt upgrade
+sudo apt install ros-galactic-desktop
+source /opt/ros/galactic/setup.bash
+ros2
+ros2 run demo_nodes_cpp talker
+cd ~
+source /opt/ros/galactic/setup.bash
+ros2 run demo_nodes_py listener
+cd ~
+sudo apt-get update
+sudo apt-get install ros-galactic-ros-gz
+sudo apt install ros-galactic-ros-gz
+sudo apt-get install lsb-release wget gnupg
+sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install ignition-edifice
+exit
+gz
+exit
+cd ~
+vncserver
+cat /home/codespace/.vnc/codespaces-e1d373:3.log
+vim .bashrc 
+exit
+history
+nano ~/.vnc/xstartup
+systemctl start vncserver
+service start vncserver
+service start vnc
+server --status-all
+service --status-all
+cd ~
+cat /home/codespace/.vnc/xstartup
+vncserver -localhost
+cat /home/codespace/.vnc/xstartup
+vncserver -localhost :2
+vncserver -localhost :3
+vncserver -kill :1
+vncserver -kill :2
+vncserver -kill :3
+vncserver -kill :4
+vncserver -localhost -kill :1
+vncserver -localhost -kill :2
+cd /home/codespace/.vnc/
+ls -a
+vncserver -localhost -kill :5
+vncserver -localhost -kill :6
+vncserver -localhost -kill :7
+vncserver -localhost -kill :8
+vncserver -localhost -kill :9
+ls -a
+rm codespaces-e1d373:*
+ls -a
+cd ..
+vncserver -depth 24 -geometry 640x480 :1
+vncserver -kill :1
+vncserver -depth 24 -geometry 640x480 :1
+vim .bashrc 
