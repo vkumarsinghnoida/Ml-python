@@ -5,4 +5,4 @@ vncserver
 vncserver -kill :1
 cp /workspaces/Ml-python/startup.txt ~/.vnc/xstartup
 chmod +x ~/.vnc/xstartup
-vncserver -depth 16 -geometry 640x480 :1
+vncserver -depth 16 -geometry 800x640 :1
