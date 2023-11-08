@@ -1,0 +1,57 @@
+./setup.sh 
+cat setup.sh 
+vncserver -kill :1
+cp /workspaces/Ml-python/startup.txt ~/.vnc/xstartup
+chmod +x ~/.vnc/xstartup
+vncserver -depth 16 -geometry 640x480 :1
+vim startup.txt 
+./setup.sh 
+cat /home/codespace/.vnc/xstartup
+sudo reboot
+./push.sh 
+vncserver -depth 24 -geometry 640x480 :1
+cat setup.sh 
+cat ~/.vnc/xstartup
+vim startup.txt 
+cat setup.sh 
+./setup.sh 
+vncserver -depth 24 -geometry 1280x800 :1
+vncserver  -kill :1
+vncserver -depth 24 -geometry 1280x800 :1
+sudo apt install firefox
+clear
+sudo apt install wget
+wget https://c4.wallpaperflare.com/wallpaper/170/298/393/animals-kali-linux-wallpaper-preview.jpg
+cd ~
+wget https://images.app.goo.gl/fwgxXT8VtBPt3LRG6
+ls
+mv fwgxXT8VtBPt3LRG6 wallpaper.jpeg
+mv fwgxXT8VtBPt3LRG6 wallpaper.jpg
+cat setup.sh 
+cd ~
+vim .bashrc 
+cd /workspaces/Ml-python/
+vim setup.sh 
+vncserver -kill :1
+./push.sh 
+cat setup.sh 
+vncserver -depth 16 -geometry 800x640 :1
+cd ~
+ls -a
+mv wallpaper.jpeg walp.jpg
+ls
+rm walp.jpg 
+clear
+cd /workspaces/Ml-python/
+./push.sh 
+ls
+cat /home/codespace/.vnc/xstartup
+clear
+cd ~
+sudo su
+cd ~
+sudo su
+clear
+lynx
+vncserver  -kill :1
+vncserver -depth 16 -geometry 800x640 :1
