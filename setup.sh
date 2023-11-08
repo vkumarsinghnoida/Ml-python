@@ -1,8 +1,8 @@
 sudo apt update
-sudo apt install lxde-core
+sudo apt install xfce4 xfce4-goodies
 sudo apt install tightvncserver
 vncserver
 vncserver -kill :1
-cp /workspaces/ML-python/startup.txt ~/.vnc/xstartup
+cp /workspaces/Ml-python/startup.txt ~/.vnc/xstartup
 chmod +x ~/.vnc/xstartup
-vncserver
+vncserver -depth 16 -geometry 640x480 :1
