@@ -1,9 +1,9 @@
 sudo apt update
-sudo apt install xfce4 xfce4-goodies
-sudo apt install tightvncserver
-sudo apt install ranger
-sudo apt install tiler
-sudp apt install neofetch
+sudo apt install xfce4 xfce4-goodies -y
+sudo apt install tightvncserver -y
+sudo apt install ranger -y
+sudo apt install tilix -y 
+sudp apt install neofetch -y
 vncserver
 vncserver -kill :1
 cp /workspaces/Ml-python/startup.txt ~/.vnc/xstartup
