@@ -88,3 +88,4 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-
 : 1700805573:0;sudo apt-get install virtualgl
 : 1700805752:0;sudo apt install ubuntu-drivers
 : 1700805754:0;sudo apt install ubuntu-driver
+: 1700806369:0;cp ~/.zsh_history zshhistory
