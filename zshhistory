@@ -1,0 +1,90 @@
+: 1700558626:0;la
+: 1700558727:0;docker
+: 1700558772:0;cat /etc/shells
+: 1700558913:0;sudo apt install tilix
+: 1700560066:0;htop
+: 1700560246:0;ranger
+: 1700561042:0;nano setup.sh
+: 1700561164:0;python3
+: 1700561533:0;ll
+: 1700561537:0;ls -a
+: 1700561586:0;pip3 install torchvision
+: 1700561631:0;python3 demonet.py
+: 1700561712:0;cd /workspaces/Ml-python/ml/
+: 1700561716:0;nano demonet.py
+: 1700561930:0;rm .demonet.py.swp
+: 1700561940:0;python3 demo.py
+: 1700562182:0;rm ml/data/cifar-10-python.tar.gz
+: 1700562308:0;git -h
+: 1700562369:0;git rm ml/data/cifar-10-batches-python.tar.gz
+: 1700562391:0;cd cifar-10-batches-py/
+: 1700562398:0;df -H
+: 1700562420:0;cd ..
+: 1700562537:0;git rm --cached ml/data/cifar-10-batches-python.tar.gz
+: 1700562773:0;git filter-branch -f --index-filter 'git rm --cached --ignore-unmatch ml/data/cifar-10-batches-python.tar.gz\
+
+: 1700562843:0;git filter-branch -f --index-filter 'git rm --cached --ignore-unmatch ml/data/cifar-10-python.tar.gz\
+
+: 1700562852:0;git rm --cached ml/data/cifar-10-python.tar.gz
+: 1700562873:0;git rm --cached --ignore-unmatch ml/data/cifar-10-python.tar.gz
+: 1700562968:0;git reset --hard HEAD~2
+: 1700562975:0;./push.sh
+: 1700562983:0;cd ml/da
+: 1700562988:0;cd ml/data/
+: 1700563016:0;cd ml/
+: 1700563041:0;cd /workspaces/Ml-python/
+: 1700563043:0;ls
+: 1700563049:0;cat setup.sh
+: 1700563055:0;neofetch
+: 1700563153:0;cmatrix
+: 1700563173:0;sudo apt install hollywood
+: 1700563191:0;/usr/bin/hollywood
+: 1700563247:0;hollywood
+: 1700563285:0;git status
+: 1700563299:0;rm ml/demonet.py.save
+: 1700746258:0;sudo apt install awesome
+: 1700746322:0;cat .zshrc
+: 1700746332:0;cat .bashrc
+: 1700746603:0;nano .bashrc
+: 1700746670:0;cd
+: 1700746673:0;vncserver
+: 1700746687:0;vncserver -kill :1
+: 1700746690:0;vncserver -kill :2
+: 1700746705:0;source .bashrc
+: 1700746845:0;clear
+: 1700746957:0;gazebo
+: 1700747103:0;sudo usermod -a -G render ubuntu
+: 1700747114:0;sudo usermod -a -G render codespace
+: 1700747186:0;sudo apt-get install lsb-release wget gnupg
+: 1700747198:0;sudo wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg\
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+: 1700747206:0;sudo apt-get update
+: 1700747218:0;sudo apt-get install ignition-fortress
+: 1700747508:0;ign gazebo -v 4 -s -r --headless-rendering
+: 1700747541:0;ign topic -et /thermal_camera
+: 1700747623:0;ign gazebo -v 4 -s -r --headless-rendering sensors_demo.sdf
+: 1700748231:0;sudo apt install libjansson-dev libboost-dev imagemagick libtinyxml-dev mercurial cmake build-essential
+: 1700748260:0;curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash\
+
+: 1700748272:0;source ~/.bashrc
+: 1700748280:0;nvm install 8
+: 1700748306:0;exit
+: 1700751764:0;sudo apt install chromium
+: 1700751777:0;sudo apt install firefox
+: 1700751954:0;lunx
+: 1700751960:0;linx
+: 1700751978:0;lynx
+: 1700804905:0;history
+: 1700804982:0;export DISPLAY=:1
+: 1700804997:0;ign gazebo
+: 1700805133:0;ign gazebo -v 4 -s -r sensors_demo.sdf
+: 1700805179:0;ign gazebo -h
+: 1700805252:0;ign gazebo sensors-demo.sdf
+: 1700805273:0;ign gazebo sensors_demo.sdf
+: 1700805306:0;sudo apt-get install xvfb
+: 1700805321:0;xvfb-run -s "-screen 0 1920x1080x24" gazebo
+: 1700805362:0;xvfb-run -s "-screen 0 800x400x24" ign gazebo
+: 1700805446:0;xvfb-run -s "-screen 0 800x400x24" ign gazebo sensors_demo.sdf
+: 1700805573:0;sudo apt-get install virtualgl
+: 1700805752:0;sudo apt install ubuntu-drivers
+: 1700805754:0;sudo apt install ubuntu-driver
