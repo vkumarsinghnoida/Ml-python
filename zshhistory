@@ -1,13 +1,8 @@
 : 1700558626:0;la
 : 1700558727:0;docker
 : 1700558772:0;cat /etc/shells
-: 1700558913:0;sudo apt install tilix
-: 1700560066:0;htop
-: 1700560246:0;ranger
-: 1700561042:0;nano setup.sh
 : 1700561164:0;python3
 : 1700561533:0;ll
-: 1700561537:0;ls -a
 : 1700561586:0;pip3 install torchvision
 : 1700561631:0;python3 demonet.py
 : 1700561712:0;cd /workspaces/Ml-python/ml/
@@ -28,30 +23,20 @@
 : 1700562852:0;git rm --cached ml/data/cifar-10-python.tar.gz
 : 1700562873:0;git rm --cached --ignore-unmatch ml/data/cifar-10-python.tar.gz
 : 1700562968:0;git reset --hard HEAD~2
-: 1700562975:0;./push.sh
 : 1700562983:0;cd ml/da
 : 1700562988:0;cd ml/data/
 : 1700563016:0;cd ml/
-: 1700563041:0;cd /workspaces/Ml-python/
-: 1700563043:0;ls
-: 1700563049:0;cat setup.sh
 : 1700563055:0;neofetch
-: 1700563153:0;cmatrix
 : 1700563173:0;sudo apt install hollywood
 : 1700563191:0;/usr/bin/hollywood
-: 1700563247:0;hollywood
 : 1700563285:0;git status
 : 1700563299:0;rm ml/demonet.py.save
 : 1700746258:0;sudo apt install awesome
 : 1700746322:0;cat .zshrc
-: 1700746332:0;cat .bashrc
-: 1700746603:0;nano .bashrc
-: 1700746670:0;cd
 : 1700746673:0;vncserver
 : 1700746687:0;vncserver -kill :1
 : 1700746690:0;vncserver -kill :2
 : 1700746705:0;source .bashrc
-: 1700746845:0;clear
 : 1700746957:0;gazebo
 : 1700747103:0;sudo usermod -a -G render ubuntu
 : 1700747114:0;sudo usermod -a -G render codespace
@@ -68,13 +53,9 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-
 
 : 1700748272:0;source ~/.bashrc
 : 1700748280:0;nvm install 8
-: 1700748306:0;exit
 : 1700751764:0;sudo apt install chromium
-: 1700751777:0;sudo apt install firefox
 : 1700751954:0;lunx
 : 1700751960:0;linx
-: 1700751978:0;lynx
-: 1700804905:0;history
 : 1700804982:0;export DISPLAY=:1
 : 1700804997:0;ign gazebo
 : 1700805133:0;ign gazebo -v 4 -s -r sensors_demo.sdf
@@ -89,3 +70,69 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-
 : 1700805752:0;sudo apt install ubuntu-drivers
 : 1700805754:0;sudo apt install ubuntu-driver
 : 1700806369:0;cp ~/.zsh_history zshhistory
+: 1700806424:0;cat setup.sh
+: 1700806443:0;nano .bashrc
+: 1700806467:0;cd /workspaces/Ml-python/
+: 1700806472:0;./setup.sh
+: 1700807386:0;sudo apt install tiler
+: 1700807404:0;sudo apt install neofetch
+: 1700807452:0;sudo apt install tilix
+: 1700807467:0;nano setup.sh
+: 1700807485:0;./push.sh
+: 1700816702:0;sudo apt install firefox
+: 1700816714:0;sudo apt install midori
+: 1700817912:0;which python
+: 1700818007:0;chmod +x loop.py
+: 1700818140:0;nano loop.py
+: 1700818151:0;./loop.py
+: 1700818217:0;c
+: 1700818255:0;gcc
+: 1700818272:0;cp loop.py lop.c
+: 1700818578:0;gcc lop.c
+: 1700818601:0;nano lop.c
+: 1700837956:0;sudo apt-get install gstreamer1.0-tools gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly\
+
+: 1700838080:0;sudo apt-get install python3-gi\
+
+: 1700838370:0;lynx
+: 1700838585:0;wget https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4\
+
+: 1700838770:0;wget --no-check-certificate 'https://drive.google.com/file/d/1H23YwtahatjIrmuww9pRtLPKcgiHuLeM/view?usp=drivesdk' -O input.mp4
+: 1700838777:0;gst-launch-1.0 filesrc location=input.mp4 ! decodebin ! autovideosink\
+
+: 1700920653:0;sudo apt install tmux
+: 1700920833:0;ls -a
+: 1700920950:0;htop
+: 1700921194:0;tmux
+: 1700921207:0;ls
+: 1700921436:0;tmux ls
+: 1700921450:0;tmux -h
+: 1700921477:0;tmux -current-session
+: 1700921483:0;tmux -c
+: 1700921490:0;tmux -c htop
+: 1700921501:0;tmux -L
+: 1700921506:0;tmux -L 0
+: 1700921514:0;tmux -L 1
+: 1700921518:0;clear
+: 1700921522:0;rmnw
+: 1700921537:0;tmux -S 0
+: 1700921556:0;hollywood
+: 1700921562:0;cmatrix
+: 1700921565:0;ranger
+: 1701172573:0;cd
+: 1701172578:0;cat .bashrc
+: 1701173509:0;history
+: 1701174013:0;whoami
+: 1701174070:0;cat /etc/shadow
+: 1701174084:0;sudo cat /etc/shadow
+: 1701175285:0;exit
+: 1701180560:0;history
+: 1701180570:0;cd
+: 1701180580:0;cat .zsh_history
+: 1701180665:0;cd /workspaces/Ml-python/
+: 1701180667:0;ls
+: 1701180682:0;cat 0
+: 1701180688:0;ls
+: 1701180699:0;cay zshhistory
+: 1701180704:0;cat zshhistory
+: 1701180717:0;cp ~/.zsh_history zshhistory

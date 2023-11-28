@@ -2,6 +2,7 @@ sudo apt update
 sudo apt install xfce4 xfce4-goodies -y
 sudo apt install tightvncserver -y
 sudo apt install ranger -y
+sudo apt install tmux -y
 sudo apt install tilix -y 
 sudp apt install neofetch -y
 vncserver
