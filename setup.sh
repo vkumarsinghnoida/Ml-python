@@ -4,8 +4,8 @@ sudo apt install tightvncserver -y
 sudo apt install ranger -y
 sudo apt install tmux -y
 sudo apt install tilix -y 
-sudp apt install neofetch -y
-sudp apt install firefox -y
+sudo apt install neofetch -y
+sudo apt install midori -y
 vncserver
 vncserver -kill :1
 cp /workspaces/Ml-python/startup.txt ~/.vnc/xstartup
