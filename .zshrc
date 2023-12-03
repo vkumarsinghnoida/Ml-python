@@ -96,7 +96,7 @@ compdef _directories md
 alias tree='tree -a -I .git'
 alias dr='docker run -it'
 alias ds='docker start'
-alias de='docker exec -it bash'
+alias de='docker exec -it'
 alias dls='docker ps -a'
 alias drm='docker rm'
 
