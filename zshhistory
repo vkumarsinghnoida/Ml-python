@@ -135,4 +135,4 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-
 : 1701180688:0;ls
 : 1701180699:0;cay zshhistory
 : 1701180704:0;cat zshhistory
-: 1701180717:0;cp ~/.zsh_history zshhistory
+
