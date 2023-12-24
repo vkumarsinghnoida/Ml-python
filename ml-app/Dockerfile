@@ -1,1 +1,1 @@
-FEOM debian:bookworm-slim
+FROM debian:bookworm-slim
