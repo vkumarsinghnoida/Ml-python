@@ -103,7 +103,7 @@ alias dst='docker stop'
 alias dli='docker images'
 alias c='clear'
 alias push='sh /workspaces/Ml-python/push.sh'
-
+alias db='docker build'
 # Add flags to existing aliases.
 alias ls="${aliases[ls]:-ls} -A"
 
