@@ -100,6 +100,8 @@ alias de='docker exec -it'
 alias dls='docker ps -a'
 alias drm='docker rm'
 alias dst='docker stop'
+alias dli='docker images'
+alias c='clear'
 
 # Add flags to existing aliases.
 alias ls="${aliases[ls]:-ls} -A"
