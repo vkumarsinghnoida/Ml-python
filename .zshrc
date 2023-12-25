@@ -104,6 +104,7 @@ alias dli='docker images'
 alias c='clear'
 alias push='sh /workspaces/Ml-python/push.sh'
 alias db='docker build'
+alias dri='docker image remove'
 # Add flags to existing aliases.
 alias ls="${aliases[ls]:-ls} -A"
 
@@ -117,3 +118,4 @@ encrypt() {
 decrypt() {
 	openssl rsautl -decrypt -inkey kamlesh_private.pem -in $1 > $2
 }
+clear
