@@ -1,3 +1,4 @@
 FROM debian:bookworm-slim
 
-Run apt update 
+RUN apt update && apt install python3-full && apt install pipx
+RUN pipx install ultralytics
