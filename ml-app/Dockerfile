@@ -8,3 +8,5 @@ RUN apt update \
 
 RUN rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED
 
+RUN python3 -m pip install --upgrade pip wheel
+RUN pip install --no-cache -e ".[export]" --extra-index-url https://download.pytorch.org/whl/cpu
