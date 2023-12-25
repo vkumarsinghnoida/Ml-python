@@ -4,4 +4,4 @@ FROM ubuntu:23.10
 #RUN pipx install ultralytics
 
 RUN apt update \
-    && apt install --no-install-recommends -y python3-pip git zip curl libgl1 libglib2.0-0 libpython3-dev libusb-1.0-0
+    && apt install --no-install-recommends -y python3-pip git libgl1 libglib2.0-0 libpython3-dev libusb-1.0-0
