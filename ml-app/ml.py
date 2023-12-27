@@ -18,11 +18,13 @@ def on_change(state, var1, var2):
 
 page='''
 
-# Object Detector
+<|text-center|>
+# OBJECT DETECTOR
 
 <|{content}|file_selector|label=Select File|>
 
-<|{impath1}|image|> <|{impath2}|image|>
+<|text-center|
+<|{impath1}|image| <|{impath2}|image|>
 
 '''
 
