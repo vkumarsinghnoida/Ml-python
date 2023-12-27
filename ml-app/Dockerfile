@@ -15,3 +15,4 @@ RUN pip install --no-cache ultralytics
 RUN pip install --no-cache taipy
 
 COPY ml.py .
+CMD ["python3","ml.py"]

@@ -1,10 +1,10 @@
 from ultralytics import YOLO
 from taipy import Gui
-import cv2
-import numpy as np
+#import cv2
+#import numpy as np
 
 app = Gui()
-model = YOLO("yolov8n.pt")
+#model = YOLO("yolov8n.pt")
 content = ''
 
 from taipy import Gui
