@@ -15,7 +15,7 @@ def on_change(state, var1, var2):
 		state.impath = var2
 		results = model.predict(var2, save=True)
 		#state.impath = savedir + var2.removeprefix("/tmp/")
-		print(state.impath, results[0][5], results[0][6])
+		print(state.impath, type(results), results[0][6][0])
 
 page='''
 
