@@ -14,7 +14,8 @@ def on_change(state, var1, var2):
 		state.impath = var2
 		results = model.predict(var2, save=True)
 #		state.impath = results.path
-		print(var2, results.path, type(results))
+		print(var2, results, type(results))
+		print(results[path])
 
 
 page='''
