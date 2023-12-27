@@ -9,14 +9,14 @@ content = ''
 
 from taipy import Gui
 
-def save(state, var1, var2):
+def on_change(state, var1, var2):
         #cv2.imwrite('output.png', img)
         print(var1, var2)
 
 
 page='''
 # Object Detector
-<|{content}|file_selector|label=Select File|on_action=save|>
+<|{content}|file_selector|label=Select File|>
 '''
 
 Gui(page).run(use_reloader=True, host='localhost')
