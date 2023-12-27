@@ -4,17 +4,16 @@ from taipy import Gui
 #import numpy as np
 
 app = Gui()
-#model = YOLO("yolov8n.pt")
+model = YOLO("yolov8n.pt")
 content = ''
-impath = ''
+impath = 'plholder.svg'
 
 from taipy import Gui
 
 def on_change(state, var1, var2):
-        #cv2.imwrite('output.png', img)
         if var1 == 'content':
-
-        print(var1, var2)
+		state.impath = var2
+        	print(var1, var2)
 
 
 page='''

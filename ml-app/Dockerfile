@@ -14,5 +14,5 @@ RUN pip install --no-cache -r requirements.txt --extra-index-url https://downloa
 RUN pip install --no-cache ultralytics 
 RUN pip install --no-cache taipy
 
-COPY ml.py .
+COPY ml.py plholder.svg .
 CMD ["python3","ml.py"]
