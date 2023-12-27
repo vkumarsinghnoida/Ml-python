@@ -3,7 +3,7 @@ from taipy import Gui
 #import cv2
 #import numpy as np
 
-app = Gui()
+#app = Gui()
 model = YOLO("yolov8n.pt")
 content = ''
 impath = 'plholder.svg'
@@ -13,7 +13,8 @@ from taipy import Gui
 def on_change(state, var1, var2):
 	if var1 == 'content':
 		state.impath = var2
-		print(var1, var2)
+		result = model.predict()
+		print(result, var2)
 
 
 page='''
