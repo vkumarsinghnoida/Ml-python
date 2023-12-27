@@ -6,7 +6,7 @@ from taipy import Gui
 model = YOLO("yolov8n.pt")
 content = ''
 impath = 'plholder.svg'
-savedir = /home/
+savedir = "/home/"
 
 from taipy import Gui
 
