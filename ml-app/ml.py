@@ -4,7 +4,7 @@ from taipy import Gui
 model = YOLO("yolov8n.pt")
 content = ''
 impath = 'plholder.svg'
-impath2 = 'plholder.svg'
+#impath2 = 'plholder.svg'
 
 def on_change(state, var1, var2):
 	if var1 == 'content':
@@ -13,7 +13,7 @@ def on_change(state, var1, var2):
 		for r in results:
 			print(r.save_dir)
 			path = r.save_dir
-		state.impath2 = '/home/' + path + '/' + var2.removeprefix('/tmp/')
+		state.impath = '/home/' + path + '/' + var2.removeprefix('/tmp/')
 		print(state.impath2)
 
 page='''
@@ -23,7 +23,6 @@ page='''
 <|{content}|file_selector|label=Select File|>
 
 <|{impath}|image|>
-<|{impath2}|image|>
 '''
 
 Gui(page).run(use_reloader=True, host='localhost')
