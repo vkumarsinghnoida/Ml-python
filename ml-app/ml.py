@@ -7,7 +7,7 @@ impath = 'plholder.svg'
 
 def on_change(state, var1, var2):
 	if var1 == 'content':
-		state.impath = var2
+#		state.impath = var2
 		results = model.predict(var2, save=True)
 		for r in results:
 			print(r.save_dir)
