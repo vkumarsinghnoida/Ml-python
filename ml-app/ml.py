@@ -13,7 +13,7 @@ from taipy import Gui
 def on_change(state, var1, var2):
 	if var1 == 'content':
 		state.impath = var2
-		result = model.predict()
+		result = model.predict(var2)
 		print(result, var2)
 
 
