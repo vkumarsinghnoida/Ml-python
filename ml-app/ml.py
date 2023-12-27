@@ -12,7 +12,7 @@ def on_change(state, var1, var2):
 		for r in results:
 			print(r.save_dir)
 			path = r.save_dir
-		state.impath = path + var2.removeprefix('/tmp/')
+		state.impath = '/home/' + path + var2.removeprefix('/tmp/')
 
 page='''
 
