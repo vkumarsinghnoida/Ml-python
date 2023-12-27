@@ -6,17 +6,24 @@ from taipy import Gui
 app = Gui()
 #model = YOLO("yolov8n.pt")
 content = ''
+impath = ''
 
 from taipy import Gui
 
 def on_change(state, var1, var2):
         #cv2.imwrite('output.png', img)
+        if var1 == 'content':
+
         print(var1, var2)
 
 
 page='''
+
 # Object Detector
+
 <|{content}|file_selector|label=Select File|>
+<|{impath}|image|>
+
 '''
 
 Gui(page).run(use_reloader=True, host='localhost')
