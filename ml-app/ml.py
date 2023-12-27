@@ -9,7 +9,7 @@ def on_change(state, var1, var2):
 	if var1 == 'content':
 		state.impath = var2
 		results = model.predict(var2, save=True)
-		print(state.impath, results[0][0])
+		print(state.impath, results.__getitem__(7))
 
 page='''
 
