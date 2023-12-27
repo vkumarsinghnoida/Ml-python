@@ -13,8 +13,8 @@ def on_change(state, var1, var2):
 	if var1 == 'content':
 		state.impath = var2
 		results = model.predict(var2, save=True)
-		state.impath = results.path
-		print(var2, results.path)
+#		state.impath = results.path
+		print(var2, results.path, type(results))
 
 
 page='''
