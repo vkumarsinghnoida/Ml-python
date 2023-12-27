@@ -1,4 +1,4 @@
 docker build -t myapp .
-./push.sh
+sh ../push.sh
 clear
 docker run -it --rm --network=host myapp
