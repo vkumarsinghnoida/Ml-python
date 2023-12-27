@@ -13,9 +13,9 @@ from taipy import Gui
 def on_change(state, var1, var2):
 	if var1 == 'content':
 		state.impath = var2
-		results = model.predict(var2, save=True, save_dir=savedir)
-		state.impath = savedir + var2.removeprefix("/tmp/")
-		print(state.impath)
+		results = model.predict(var2, save=True)
+		#state.impath = savedir + var2.removeprefix("/tmp/")
+		print(state.impath, results[0][5], results[0][6])
 
 page='''
 
