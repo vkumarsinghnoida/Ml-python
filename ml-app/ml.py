@@ -5,13 +5,13 @@ import numpy as np
 
 app = Gui()
 model = YOLO("yolov8n.pt")
-content = ' '
+content = ''
 
 from taipy import Gui
 
-def save(img):
+def save(state, var1, var2):
         #cv2.imwrite('output.png', img)
-        print(img)
+        print(var1, var2)
 
 
 page='''
