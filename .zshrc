@@ -105,6 +105,8 @@ alias c='clear'
 alias push='sh /workspaces/Ml-python/push.sh'
 alias db='docker build'
 alias dri='docker image remove'
+alias dip='docker image prune'
+
 # Add flags to existing aliases.
 alias ls="${aliases[ls]:-ls} -A"
 
