@@ -21,7 +21,6 @@ page='''
 # OBJECT DETECTOR
 <|{content}|file_selector|label=Select File|>
 
-## IMAGE                 RESULT
 <|{impath1}|image|> <|{impath2}|image|>
 >
 '''
