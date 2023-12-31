@@ -17,13 +17,13 @@ def on_change(state, var1, var2):
 		print(state.impath2)
 
 page='''
-
+<|text-center|
 # OBJECT DETECTOR
 <|{content}|file_selector|label=Select File|>
 
-<|{impath1}|image|>
-<|{impath2}|image|>
-
+## IMAGE                 RESULT
+<|{impath1}|image|> <|{impath2}|image|>
+>
 '''
 
 Gui(page).run(use_reloader=True, host='localhost')
