@@ -1,0 +1,9 @@
+"name": "Mlap",
+            "build": {
+                        // Path is relative to the devcontainer.json file.
+                                    "dockerfile": "Dockerfile"
+                        },
+
+                "forwardPorts": [5000],
+                "postCreateCommand": "ls"
+}
