@@ -1,4 +1,4 @@
-FROM  kamleshvkumarsingh/ml-app:dev
+FROM  python:slim-bullseye
 
-WORKDIR /home/
 RUN apt update && apt install openssh-server -y && service start ssh
+RUN apt install docker.io -y
