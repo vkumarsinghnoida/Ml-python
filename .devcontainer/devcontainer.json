@@ -4,6 +4,12 @@
                         // Path is relative to the devcontainer.json file.
                                     "dockerfile": "Dockerfile"
                         },
+	"features": {
+                    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+                    }
+        ,
+        "workspaceFolder": "${localWorkspaceFolder}",
+        "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
 
                 "forwardPorts": [5000],
                 "postCreateCommand": "ls"
