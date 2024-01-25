@@ -1,25 +1,29 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "Ubuntu",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	"name": "Ubunfjbvjftu",
+	 // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+//	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	"build": {
+        // Path is relative to the devcontainer.json file.
+        "dockerfile": "Dockerfile"
+    },
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {
-			"moby": true,
-			"azureDnsAutoDetection": true,
-			"installDockerBuildx": true,
-			"version": "latest",
-			"dockerDashComposeVersion": "v1"
-		},
 		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
 			"moby": true,
 			"installDockerBuildx": true,
 			"version": "latest",
 			"dockerDashComposeVersion": "v2"
 		},
-		"ghcr.io/customink/codespaces-features/docker-in-docker-amzn:1": {}
-	}
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"moby": true,
+			"azureDnsAutoDetection": true,
+			"installDockerBuildx": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "v2"
+		},
+
+	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -28,7 +32,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "uname -a",
+	 "postCreateCommand": "pip install -r requirements.txt",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
