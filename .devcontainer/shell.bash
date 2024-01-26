@@ -15,4 +15,4 @@ echo \
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y 
 sudo apt install openssh-server python3 python3-pip nano -y && sudo service ssh start 
-
+pip install -r requirements.txt
