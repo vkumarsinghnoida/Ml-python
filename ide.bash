@@ -1,17 +1,17 @@
-wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
-   49  apt install tar
-   50  tar xzvf nvim-linux64.tar.gz
-   51  apt remove neovim
-   52  apt remove vim
-   53  ./nvim-linux64/bin/nvim
-   54  git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
-   55  nvim
-   56  ./nvim-linux64/bin/nvim
-   57  apt install python3.8-venv python3.8
-   58  ./nvim-linux64/bin/nvim
-   59  ./nvim-linux64/bin/nvim demo.py
-   60  python3 demo.py
-   61  pip
-   62  apt install python3-pip
-   63  pip install pandas numpy matplotlib
-   ./nvim-linux64/bin/nvim demo.py
+1  apt install nvim-treesitter
+    2  npm install nvim-treesitter
+    3  npm install treesitter                                              4  git clone https://github.com/LazyVim/starter ~/.config/nvim
+    5  ./nvim-linux64/bin/nvim
+    6  ./nvim-linux64/bin/nvim demo.py
+    7  python3 demo.py
+    8  which python
+    9  which python3
+   10  ./nvim-linux64/bin/nvim demo.py
+   11  history
+   12  which python3
+   13  python3 demo.py                                                    14  pip install torch
+   15  apt install python3-pip -y
+   16  pip install torch
+   17  ./nvim-linux64/bin/nvim demo.py
+   18  python3 demo.py
+   19  pip install numpy
