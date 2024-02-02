@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu
 
 COPY requirements.txt .
 RUN     apt update 
