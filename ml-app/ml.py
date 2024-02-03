@@ -1,13 +1,10 @@
 from ultralytics import YOLO
-from numpy as n
 from taipy import Gui
 
 model = YOLO("yolov8n.pt")
 content = ''
 impath1 = 'plholder.svg'
 impath2 = 'plholder.svg'
-
-a = np.arr
 
 def on_change(state, var1, var2):
 	if var1 == 'content':
