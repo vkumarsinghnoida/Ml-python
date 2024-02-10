@@ -1,4 +1,4 @@
-FROM kamleshvkumarsingh/tide:dev
+FROM kamleshvkumarsingh/tide:latest
 
 #RUN apt update && apt install openssh-server git wget python3-venv npm tar nano curl python3-pip python3 -y
 #RUN wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz && apt install tar && tar xzvf nvim-linux64.tar.gz
