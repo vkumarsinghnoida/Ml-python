@@ -1,4 +1,5 @@
-''sudo apt update
+apt update
+apt install sudo -y
 sudo apt install xfce4 xfce4-goodies -y
 sudo apt install tightvncserver -y
 sudo apt install ranger -y
@@ -12,11 +13,4 @@ cp /workspaces/Ml-python/startup.txt ~/.vnc/xstartup
 chmod +x ~/.vnc/xstartup
 vncserver -depth 16 -geometry 800x600 :1
 echo -e  "vncserver -depth 16 -geometry 1280x640 :1 \nzsh \nclear" >> ~/.bashrc
-cp zshhistory ~/.zsh_history''
-
-adduser ubuntu
-passwd root
-su ubuntu
-if command -v curl >/dev/null 2>&1; then sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"; else sh -c "$(wget -O- https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"; fi
-pip install -r requirements.txt
-echo 'alias /./nvim-linux64/bin/nvim' >>~/.zshrc
+cp zshhistory ~/.zsh_history
