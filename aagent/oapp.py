@@ -2,7 +2,7 @@
 
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores.chroma import Chroma
 from langchain_community import embeddings
 from langchain_community.chat_models import ChatOllama
 from langchain_core.runnables import RunnablePassthrough
@@ -12,7 +12,8 @@ from langchain.output_parsers import PydanticOutputParser
 from langchain.text_splitter import CharacterTextSplitter
 
 model_local = ChatOllama(model="dolphin-phi")
-
+persist_directory="./pytorch"
+'''
 # 1. Split data into chunks
 urls = [
     "https://ollama.com/",
@@ -24,6 +25,7 @@ docs = [WebBaseLoader(url).load() for url in urls]
 docs_list = [item for sublist in docs for item in sublist]
 text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=7500, chunk_overlap=100)
 doc_splits = text_splitter.split_documents(docs_list)
+'''
 
 loader = PyPDFLoader("Ollama.pdf")
 doc_splits = loader.load_and_split()
@@ -33,7 +35,20 @@ vectorstore = Chroma.from_documents(
     documents=doc_splits,
     collection_name="rag-chroma",
     embedding=embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text'),
+    persist_directory=persist_directory
 )
+vectorstore.persist()
+
+
+'''
+embedding_function = embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text')
+
+# Load the database from the specified directory with the embedding function
+vectorstore = Chroma(
+    persist_directory=persist_directory,
+    embedding_function=embedding_function
+)
+'''
 retriever = vectorstore.as_retriever()
 
 # 3. Before RAG
@@ -41,7 +56,8 @@ print("Before RAG\n")
 before_rag_template = "{topic}"
 before_rag_prompt = ChatPromptTemplate.from_template(before_rag_template)
 before_rag_chain = before_rag_prompt | model_local | StrOutputParser()
-print(before_rag_chain.invoke({"topic": "create an artficial nueral network example in python using pytorch"}))
+ques = str(input("Enter question - "))
+print(before_rag_chain.invoke({"topic": ques}))
 
 # 4. After RAG
 print("\n########\nAfter RAG\n")
@@ -56,4 +72,4 @@ after_rag_chain = (
     | model_local
     | StrOutputParser()
 )
-print(after_rag_chain.invoke("create an artficial nueral network example in python using pytorch"))
+print(after_rag_chain.invoke(ques))
