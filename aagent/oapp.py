@@ -11,7 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.text_splitter import CharacterTextSplitter
 
-model_local = ChatOllama(model="dolphin-phi")
+model_local = ChatOllama(model="phi")
 persist_directory="./pytorch"
 '''
 # 1. Split data into chunks
@@ -42,6 +42,8 @@ vectorstore.persist()
 
 '''
 embedding_function = embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text')
+
+
 
 # Load the database from the specified directory with the embedding function
 vectorstore = Chroma(

@@ -10,7 +10,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
 loader = WebBaseLoader(
-    web_paths=("https://ollama.com/blog/windows-preview",),
+    web_paths=("https://ollama.com/",),
     bs_kwargs=dict(
         parse_only=bs4.SoupStrainer(
             class_=("post-content", "post-title", "post-header")
@@ -25,10 +25,19 @@ loader = WebBaseLoader(
 ]
 docs = [WebBaseLoader(url).load() for url in urls]'''
 
-
+print(loader)
 docs = loader.load()
+print(docs)
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 splits = text_splitter.split_documents(docs)
+
+urls = [
+    "https://ollama.com/",                                                         "https://ollama.com/blog/windows-preview",                                     "https://ollama.com/blog/openai-compatibility",
+    "https://github.com/pytorch/examples",                                     ]
+docs = [WebBaseLoader(url).load() for url in urls]
+docs_list = [item for sublist in docs for item in sublist]
+text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=7500, chunk_overlap=100)
+splits = text_splitter.split_documents(docs_list)
 
 # Create Ollama embeddings and vector store
 embeddings = OllamaEmbeddings(model="nomic-embed-text")
@@ -43,7 +52,7 @@ def format_docs(docs):
 # Define the Ollama LLM function
 def ollama_llm(question, context):
     formatted_prompt = f"Question: {question}\n\nContext: {context}"
-    response = ollama.chat(model='mistral', messages=[{'role': 'user', 'content': formatted_prompt}])
+    response = ollama.chat(model='dolphin-phi', messages=[{'role': 'user', 'content': formatted_prompt}])
     return response['message']['content']
 
 # Define the RAG chain
