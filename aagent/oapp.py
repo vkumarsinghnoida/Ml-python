@@ -25,7 +25,7 @@ docs = [WebBaseLoader(url).load() for url in urls]
 docs_list = [item for sublist in docs for item in sublist]
 text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=7500, chunk_overlap=100)
 doc_splits = text_splitter.split_documents(docs_list)
-'''
+
 
 loader = PyPDFLoader("Ollama.pdf")
 doc_splits = loader.load_and_split()
@@ -48,7 +48,7 @@ vectorstore = Chroma(
     persist_directory=persist_directory,
     embedding_function=embedding_function
 )
-'''
+
 retriever = vectorstore.as_retriever()
 
 # 3. Before RAG
