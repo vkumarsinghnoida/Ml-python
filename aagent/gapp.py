@@ -1,76 +1,106 @@
-#!/root/miniconda3/envs/aagent/bin/python3
+#!/root/miniconda3/envs/aagent/bin/python
 '''
 import os
-
 from groq import Groq
 
-client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY"),
-)
+# Initialize the Groq client with your API key
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-ques = input("Enter question ")
+# Function to handle user input and generate responses
+def chat_with_bot():
+    # Initialize the conversation history
+    conversation_history = []
 
-chat_completion = client.chat.completions.create(
-    messages=[
-        {
-            "role": "user",
-            "content": str(ques),
-        }
-    ],
-    model="mixtral-8x7b-32768",
-)
+    while True:
+        # Get user input
+        user_input = input("You: ")
 
-print(chat_completion.choices[0].message.content)
+        # Break the loop if the user types 'quit'
+        if user_input.lower() == 'quit':
+            break
+
+        # Add user message to the conversation history
+        conversation_history.append({"role": "user", "content": user_input})
+
+        # Generate a response using the Groq API
+        response = client.chat.completions.create(
+            messages=conversation_history,
+            model="mixtral-8x7b-32768" # Replace with your model ID
+        )
+
+        # Extract the assistant's response
+        assistant_response = response.choices[0].message.content
+
+        # Add assistant's response to the conversation history
+        conversation_history.append({"role": "assistant", "content": assistant_response})
+
+        # Print the assistant's response
+        print(f"Assistant: {assistant_response}")
+
+# Run the chatbot
+chat_with_bot()
 '''
 
-import gradio as gr
+
+import os
+from groq import Groq
 import ollama
 from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community import embeddings
 from langchain_community.vectorstores.chroma import Chroma
 
-embedding_function = embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text')
+# Initialize the Groq client with your API key
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-# Load the database from the specified directory with the embedding function
-vectorstore = Chroma(
-    persist_directory="./pytorch",
-    embedding_function=embedding_function
-)
-
+# Initialize the OllamaEmbeddings and Chroma vector store
+embedding_function = OllamaEmbeddings(model='nomic-embed-text')
+vectorstore = Chroma(persist_directory="./pytorch", embedding_function=embedding_function)
 retriever = vectorstore.as_retriever()
 
-def chatbot_response(user_input):
-    global retriever
-    messages = [
-        {'role': 'system', 'content': 'You are a helpful assistant.'}
-    ]
+def chat_with_bot():
+    # Initialize the conversation history
+    conversation_history = []
 
-    context = retriever.invoke(user_input)
-    formatted_prompt = f"Question: {user_input}\n\nContext: {context}"
-    messages.append({'role': 'user', 'content': formatted_prompt})
+    while True:
+        # Get user input
+        # user_input = input("You: ")
 
-    response_generator = ollama.chat(model='dolphin-phi', messages=messages, stream=True)
-    response = ""
-    for part in response_generator:
-        if 'message' in part:
-            response += part['message']['content']
-        else:
-            response += "Unexpected response part: " + str(part)
+        input_string = ""
+        while True:
+            line = input("> ")
+            if line == "end":
+                break
+            input_string += line + "\n"
 
-    # Add the assistant's response to the messages
-    messages.append({'role': 'assistant', 'content': response})
+        # Remove the last newline character if the user didn't end with an empty line                                   
+        if input_string[-1] == "\n":
+            user_input = input_string[:-1]
 
-    return response
+        # Break the loop if the user types 'quit'
+        if user_input.lower() == 'quit':
+            break
 
-# Define the Gradio interface
-iface = gr.Interface(
-    fn=chatbot_response, # The function to call
-    inputs=gr.inputs.Textbox(lines=5, placeholder="Type your message here..."), # Input component
-    outputs=gr.outputs.Textbox(), # Output component
-    title="Chatbot",
-    description="A simple chatbot using Gradio and Ollama."
-)
+        # Embed the user input and retrieve context using ChromaDB
+        context = retriever.invoke(user_input)
+        formatted_prompt = f"Question: {user_input}\n\nContext: {context}"
 
-# Launch the Gradio app
-iface.launch()
+        # Add user message to the conversation history
+        conversation_history.append({"role": "user", "content": formatted_prompt})
+
+        # Generate a response using the Groq API
+        response = client.chat.completions.create(
+            messages=conversation_history,
+            model="mixtral-8x7b-32768" # Replace with your model ID
+        )
+
+        # Extract the assistant's response
+        assistant_response = response.choices[0].message.content
+
+        # Add assistant's response to the conversation history
+        conversation_history.append({"role": "assistant", "content": assistant_response})
+
+        # Print the assistant's response
+        print(f"Assistant: {assistant_response}")
+
+# Run the chatbot
+chat_with_bot()
 
