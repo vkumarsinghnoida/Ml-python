@@ -144,12 +144,45 @@ def list_saved_conversations():
         os.makedirs(chats_dir)
     return [f for f in os.listdir(chats_dir) if f.endswith('.txt')]
 
-def load_conversation(file_name):
+def load_conversation_from_file(file_name):
     # Load a conversation from a file in the chats directory
     chats_dir = "chats"
     file_path = os.path.join(chats_dir, file_name)
     with open(file_path, 'r') as file:
         conversation_history = [line.strip() for line in file.readlines()]
+    return conversation_history
+
+def load_conversation(file_path):
+    # Initialize an empty list to hold the conversation history
+    conversation_history = []
+
+    # Open the file and read its content
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Initialize variables to hold the current message and its role
+    current_message = ""
+    current_role = ""
+
+    # Iterate over each line in the file
+    for line in lines:
+        # Check if the line starts with "user:" or "assistant:"
+        if line.startswith("user:") or line.startswith("assistant:"):
+            # If there's a current message, append it to the conversation history
+            if current_message:
+                conversation_history.append({"role": current_role, "content": current_message})
+
+            # Update the current role and message
+            current_role = line.split(":")[0] # "user" or "assistant"
+            current_message = line.split(":", 1)[1].strip() # The rest of the line
+        else:
+            # If the line doesn't start with "user:" or "assistant:", it's part of the current message
+            current_message += "\n" + line.strip()
+
+    # Append the last message to the conversation history
+    if current_message:
+        conversation_history.append({"role": current_role, "content": current_message})
+
     return conversation_history
 
 def save_conversation(conversation_history, file_name):
