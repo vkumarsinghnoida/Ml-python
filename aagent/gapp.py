@@ -192,18 +192,18 @@ def chat_with_bot():
         input_string = ""
         while True:
             line = input("> ")
-            if line == "end":
+            if line == ",,,":
                 break
-            input_string += line + "\n"
-
-        if input_string[-1] == "\n":
-            user_input = input_string[:-1]
-
-        if user_input.lower() == 'quit':
+            elif line == "quit":
+                input_string += line
+                break
+            else:
+                input_string += line + "\n"
+        if input_string.lower() == 'quit':
             break
 
-        context = retriever.invoke(user_input)
-        formatted_prompt = f"Question: {user_input}\n\nContext: {context}"
+        context = retriever.invoke(input_string)
+        formatted_prompt = f"Question: {input_string}\n\nContext: {context}"
 
         conversation_history.append({"role": "user", "content": formatted_prompt})
 
@@ -223,7 +223,7 @@ def chat_with_bot():
     if save_chat.lower() == 'yes':
         # Ask the user to name the conversation file
         file_name = input("Enter a name for the conversation file: ")
-        save_conversation(conversation_history, f"{file_name}.txt")
+        save_conversation(conversation_history, file_name)
 
 # Run the chatbot
 chat_with_bot()

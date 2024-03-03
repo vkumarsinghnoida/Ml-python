@@ -1,0 +1,17 @@
+user: Question: tell me about taj mahal
+
+
+Context: []
+assistant: The Taj Mahal is an incredible architectural masterpiece and a UNESCO World Heritage Site located in Agra, India. This magnificent white marble mausoleum was built between 1631 and 1648 by order of the Mughal emperor Shah Jahan in honor of his beloved wife, Mumtaz Mahal. Designed by a team of architects led by Ustad Ahmad Lahauri, the Taj Mahal is a fusion of Persian, Islamic, and Indian architectural styles.
+
+Some notable features of the Taj Mahal include:
+
+1. Main Entrance: The main entrance to the Taj Mahal is a grand red sandstone gateway adorned with Arabic calligraphy and intricate floral patterns.
+2. Charbagh Garden: The Taj Mahal is set within a lush charbagh (four-part) garden, divided by waterways and walkways.
+3. Minarets: Four elegant minarets flank the main mausoleum, each standing 138 feet tall.
+4. Mausoleum: The central focus of the Taj Mahal is the stunning white marble mausoleum that houses the false sarcophagi of Shah Jahan and Mumtaz Mahal.
+5. Dome: The iconic onion-shaped dome of the Taj Mahal is made of white marble and stands at a height of 213 feet.
+6. Calligraphy: The exterior and interior walls of the Taj Mahal are adorned with intricate calligraphy from the Quran, created using black marble inlaid into the white marble background.
+7. Inlay Work: The Taj Mahal showcases exquisite inlay work using precious and semi-precious stones, such as lapis lazuli, turquoise, malachite, jade, crystal, and amethyst.
+
+The Taj Mahal is a symbol of eternal love and is considered one of the most beautiful buildings in the world. It attracts millions of visitors each year, who come to admire its breathtaking beauty and learn about its rich history.
