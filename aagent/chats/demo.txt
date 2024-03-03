@@ -15,3 +15,15 @@ Some notable features of the Taj Mahal include:
 7. Inlay Work: The Taj Mahal showcases exquisite inlay work using precious and semi-precious stones, such as lapis lazuli, turquoise, malachite, jade, crystal, and amethyst.
 
 The Taj Mahal is a symbol of eternal love and is considered one of the most beautiful buildings in the world. It attracts millions of visitors each year, who come to admire its breathtaking beauty and learn about its rich history.
+user: Question: tell me about the river adjacent to it
+,,
+
+
+Context: []
+assistant: The river that flows adjacent to the Taj Mahal is the River Yamuna. This sacred river originates in the Yamunotri Glacier in the Himalayas and is the longest and the second-largest tributary that flows into the Ganges. The Yamuna River has significant cultural and religious importance in Hinduism, and it is revered as a goddess.
+
+The Taj Mahal is located on the southern bank of the Yamuna River, and the river flows along the western and southern sides of the monument. During the Mughal era, the river was used for transportation, irrigation, and as a source of water for the nearby Agra city.
+
+Today, the Yamuna River is heavily polluted due to the discharge of industrial and domestic waste, and the water quality has significantly deteriorated. However, efforts are being made by the Indian government and various environmental organizations to clean and rejuvenate the river.
+
+The Taj Mahal and the Yamuna River are interconnected, and the river's health and ecological balance are crucial for the preservation of the monument. The Indian government and the Archaeological Survey of India have taken several measures to protect the Taj Mahal and its surrounding environment, including the regulation of industrial activities and the promotion of sustainable tourism practices.

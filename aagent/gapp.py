@@ -157,6 +157,8 @@ def load_conversation(file_path):
     conversation_history = []
 
     # Open the file and read its content
+    chats_dir = "chats"
+    file_path = os.path.join(chats_dir, file_path)
     with open(file_path, 'r') as file:
         lines = file.readlines()
 
@@ -256,8 +258,16 @@ def chat_with_bot():
     if save_chat.lower() == 'yes':
         # Ask the user to name the conversation file
         file_name = input("Enter a name for the conversation file: ")
-        save_conversation(conversation_history, file_name)
+        if file_name:
+            if file_name.endswith(".txt"):
+                 file_name = file_name.replace(".txt", "")
+            save_conversation(conversation_history, file_name)
+        elif load_or_start_new:
+            if selected_conversation.endswith(".txt"):
+                 selected_conversation = selected_conversation.replace(".txt", "")
+            save_conversation(conversation_history, selected_conversation)
+        else:
+            pass
 
 # Run the chatbot
 chat_with_bot()
-
