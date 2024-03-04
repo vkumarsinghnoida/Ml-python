@@ -16,50 +16,37 @@ vectorstore = Chroma(persist_directory="./pytorch", embedding_function=embedding
 retriever = vectorstore.as_retriever()
 
 def list_saved_conversations():
-    # List all files in the chats directory that end with .txt
     chats_dir = "chats"
     if not os.path.exists(chats_dir):
         os.makedirs(chats_dir)
     return [f for f in os.listdir(chats_dir) if f.endswith('.txt')]
 
 def load_conversation(file_path):
-    # Initialize an empty list to hold the conversation history
     conversation_history = []
-
-    # Open the file and read its content
     chats_dir = "chats"
     file_path = os.path.join(chats_dir, file_path)
     with open(file_path, 'r') as file:
         lines = file.readlines()
 
-    # Initialize variables to hold the current message and its role
     current_message = ""
     current_role = ""
 
-    # Iterate over each line in the file
     for line in lines:
-        # Check if the line starts with "user:" or "assistant:"
         if line.startswith("user:") or line.startswith("assistant:"):
-            # If there's a current message, append it to the conversation history
             if current_message:
                 conversation_history.append({"role": current_role, "content": current_message})
 
-            # Update the current role and message
-            current_role = line.split(":")[0] # "user" or "assistant"
-            current_message = line.split(":", 1)[1].strip() # The rest of the line
+            current_role = line.split(":")[0]
+            current_message = line.split(":", 1)[1].strip()
         else:
-            # If the line doesn't start with "user:" or "assistant:", it's part of the current message
             current_message += "\n" + line.strip()
 
-    # Append the last message to the conversation history
     if current_message:
         conversation_history.append({"role": current_role, "content": current_message})
 
     return conversation_history
 
-
 def save_conversation(conversation_history, file_name):
-    # Save the conversation to a file in the chats directory
     chats_dir = "chats"
     if not os.path.exists(chats_dir):
         os.makedirs(chats_dir)
@@ -70,6 +57,14 @@ def save_conversation(conversation_history, file_name):
 
 # Streamlit app
 st.title("Chatbot")
+
+# Help section
+st.sidebar.title("Help")
+st.sidebar.markdown("""
+- Type your message in the input field below.
+- Press 'Send' to get a response from the assistant.
+- You can save your conversation by checking the 'Save this chat?' box and entering a name for the file.
+""")
 
 # Sidebar for conversation selection
 st.sidebar.title("Conversations")
@@ -84,11 +79,14 @@ else:
     conversation_history = []
 
 # Main chat interface
-st.write("Conversation:")
+chat_placeholder = st.empty()
 for message in conversation_history:
-    st.write(f"{message['role'].capitalize()}: {message['content']}")
+    if message['role'] == 'user':
+        chat_placeholder.markdown(f"**User:** {message['content']}")
+    else:
+        chat_placeholder.markdown(f"**Assistant:** {message['content']}")
 
-user_input = st.text_input("Type your message here:")
+user_input = st.text_area("Type your message here:")
 if st.button("Send"):
     context = retriever.invoke(user_input)
     formatted_prompt = f"Question: {user_input}\n\nContext: {context}"
@@ -104,12 +102,15 @@ if st.button("Send"):
 
     conversation_history.append({"role": "assistant", "content": assistant_response})
 
-    st.write(f"Assistant: {assistant_response}")
+    chat_placeholder.markdown(f"**Assistant:** {assistant_response}")
 
 # Option to save the chat
 save_chat = st.checkbox("Do you want to save this chat?")
 if save_chat:
     file_name = st.text_input("Enter a name for the conversation file:")
-    if st.button("Save"):
+    if st.button("Save") and file_name:
         save_conversation(conversation_history, file_name)
+        st.success("Chat saved successfully.")
+    else:
+        save_conversation(conversation_history, selected_conversation)
         st.success("Chat saved successfully.")

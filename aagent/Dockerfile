@@ -9,7 +9,7 @@ RUN apt-get update
 
 # Install Python 3.11.4
 RUN apt-get install -y software-properties-common
-RUN add-apt-repository ppa:deadsnakes/ppa
+RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get update
 RUN apt-get install -y python3.11
 
@@ -30,4 +30,4 @@ RUN curl https://ollama.ai/install.sh | sh
 RUN pip install groq lamachain ollama chromadb
 
 # Set the default command to run when the container starts
-CMD ["bash"]
+CMD ["sh aagent/start.sh"]
