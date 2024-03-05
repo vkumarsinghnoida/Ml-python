@@ -1,4 +1,7 @@
 numpy
 pandas
 matplotlib
-shell-gpt
+ollama 
+chromadb
+langchain
+groq
