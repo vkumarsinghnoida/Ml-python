@@ -128,6 +128,7 @@ from groq import Groq
 import ollama
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores.chroma import Chroma
+import re
 
 # Initialize the Groq client with your API key
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
@@ -198,6 +199,34 @@ def save_conversation(conversation_history, file_name):
             file.write(f"{message['role']}: {message['content']}\n")
 
 # The rest of your chat_with_bot function remains the same
+from interpreter import interpreter
+
+def extract_shell_command(response):
+    # Regular expression to find text within triple quotes
+    pattern = r"```(.*?)```"
+    match = re.search(pattern, response, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    else:
+        return None
+
+def handle_groq_response(response):
+    # Extract the shell command from the Groq API response
+    shell_command = extract_shell_command(response)
+    if shell_command:
+        # Ask the user for confirmation before executing the command
+        confirmation = input(f"Do you want to execute the following command?\n{shell_command}\n(yes/no): ")
+        if confirmation.lower() == 'yes':
+            # Execute the command with Open Interpreter
+            #interpreter.computer.run("bash", "shell_command")
+            bash_command_generator = interpreter.computer.run("bash", str(shell_command))
+            for output in bash_command_generator:
+                if output['type'] == 'console' and output['format'] == 'output':
+                    print(output['content'])
+        else:
+            print("Command execution cancelled.")
+    else:
+        print("No shell command found in the response.")
 
 
 
@@ -252,6 +281,7 @@ def chat_with_bot():
         conversation_history.append({"role": "assistant", "content": assistant_response})
 
         print(f"Assistant: {assistant_response}")
+        handle_groq_response(assistant_response)
 
     # After the chat ends, ask the user if they want to save the chat
     save_chat = input("Do you want to save this chat? (yes/no): ")
