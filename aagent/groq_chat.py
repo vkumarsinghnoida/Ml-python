@@ -143,8 +143,8 @@ def chat_with_bot():
         if input_string.lower() == 'quit':
             break
 
-        context = retriever.invoke(input_string)
-        formatted_prompt = f"Question: {input_string}\n\nContext: {context}"
+#        context = retriever.invoke(input_string)
+        formatted_prompt = f"Question: {input_string}\n\nContext: use bash commands"
 
         conversation_history.append({"role": "user", "content": formatted_prompt})
 

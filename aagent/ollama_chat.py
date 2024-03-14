@@ -11,7 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.text_splitter import CharacterTextSplitter
 
-model_local = ChatOllama(model="phi")
+model_local = ChatOllama(model="deepseek-coder:6.7b")
 persist_directory="./pytorch"
 '''
 # 1. Split data into chunks
