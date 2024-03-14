@@ -12,7 +12,7 @@ from langchain.output_parsers import PydanticOutputParser
 from langchain.text_splitter import CharacterTextSplitter
 
 model_local = ChatOllama(model="deepseek-coder:6.7b")
-persist_directory="./pytorch"
+persist_directory="./hacker"
 '''
 # 1. Split data into chunks
 urls = [
@@ -25,31 +25,32 @@ docs = [WebBaseLoader(url).load() for url in urls]
 docs_list = [item for sublist in docs for item in sublist]
 text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=7500, chunk_overlap=100)
 doc_splits = text_splitter.split_documents(docs_list)
+'''
 
-
-loader = PyPDFLoader("Ollama.pdf")
+loader = PyPDFLoader("hack.pdf")
 doc_splits = loader.load_and_split()
+embedding_function = embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text')
 
 # 2. Convert documents to Embeddings and store them
 vectorstore = Chroma.from_documents(
     documents=doc_splits,
     collection_name="rag-chroma",
-    embedding=embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text'),
+    embedding=embedding_function,
     persist_directory=persist_directory
 )
 vectorstore.persist()
 
 
+# embedding_function = embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text')
+
+
 '''
-embedding_function = embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text')
-
-
-
 # Load the database from the specified directory with the embedding function
 vectorstore = Chroma(
     persist_directory=persist_directory,
     embedding_function=embedding_function
 )
+'''
 
 retriever = vectorstore.as_retriever()
 
