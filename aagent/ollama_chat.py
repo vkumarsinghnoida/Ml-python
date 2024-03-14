@@ -11,9 +11,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.text_splitter import CharacterTextSplitter
 
-model_local = ChatOllama(model="deepseek-coder:6.7b")
+model_local = ChatOllama(model="dolphin-phi")
 persist_directory="./hacker"
-'''
+
 # 1. Split data into chunks
 urls = [
     "https://ollama.com/",
@@ -25,11 +25,12 @@ docs = [WebBaseLoader(url).load() for url in urls]
 docs_list = [item for sublist in docs for item in sublist]
 text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=7500, chunk_overlap=100)
 doc_splits = text_splitter.split_documents(docs_list)
-'''
 
+'''
 loader = PyPDFLoader("hack.pdf")
 doc_splits = loader.load_and_split()
-embedding_function = embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text')
+'''
+embedding_function = embeddings.OllamaEmbeddings(base_url="http://localhost:11434", model='all-minilm')
 
 # 2. Convert documents to Embeddings and store them
 vectorstore = Chroma.from_documents(

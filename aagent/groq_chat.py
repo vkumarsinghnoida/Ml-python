@@ -12,7 +12,7 @@ client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # Initialize the OllamaEmbeddings and Chroma vector store
 embedding_function = OllamaEmbeddings(model='nomic-embed-text')
-vectorstore = Chroma(persist_directory="./pytorch", embedding_function=embedding_function)
+vectorstore = Chroma(persist_directory="./hacker", embedding_function=embedding_function)
 retriever = vectorstore.as_retriever()
 
 def list_saved_conversations():
@@ -80,12 +80,12 @@ from interpreter import interpreter
 
 def extract_shell_command(response):
     # Regular expression to find text within triple quotes
-    pattern = r"```(.*?)```"
+    pattern = r"```bash(.*?)```"
     match = re.search(pattern, response, re.DOTALL)
     if match:
         return match.group(1).strip()
     else:
-        return None
+        return response
 
 def handle_groq_response(response):
     # Extract the shell command from the Groq API response
@@ -109,7 +109,10 @@ def handle_groq_response(response):
 
 def chat_with_bot():
     # Initialize the conversation history
-    conversation_history = []
+    conversation_history = [{
+            "role": "system",
+            "content": "Provide only bash shell commands for ubuntu linux without any description. If there is a lack of details, provide most logical solution.Ensure the output is a valid shell command.If multiple steps required try to combine them together using &&.Provide only plain text without Markdown formatting.Do not provide markdown formatting such as ```. remember your last commands and give updates if asked for something similar"
+        }]
 
     # Check if there are any saved conversations
     saved_conversations = list_saved_conversations()
@@ -143,8 +146,8 @@ def chat_with_bot():
         if input_string.lower() == 'quit':
             break
 
-#        context = retriever.invoke(input_string)
-        formatted_prompt = f"Question: {input_string}\n\nContext: use bash commands"
+        context = retriever.invoke(input_string)
+        formatted_prompt = f"Question: {input_string}\n\nContext: {context}"
 
         conversation_history.append({"role": "user", "content": formatted_prompt})
 
