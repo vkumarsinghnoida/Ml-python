@@ -1,5 +1,5 @@
 #!/root/miniconda3/envs/aagent/bin/python3
-
+from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores.chroma import Chroma
@@ -14,6 +14,7 @@ from langchain.text_splitter import CharacterTextSplitter
 model_local = ChatOllama(model="dolphin-phi")
 persist_directory="./hacker"
 
+'''
 # 1. Split data into chunks
 urls = [
     "https://ollama.com/",
@@ -26,10 +27,10 @@ docs_list = [item for sublist in docs for item in sublist]
 text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=7500, chunk_overlap=100)
 doc_splits = text_splitter.split_documents(docs_list)
 
-'''
+
 loader = PyPDFLoader("hack.pdf")
 doc_splits = loader.load_and_split()
-'''
+
 embedding_function = embeddings.OllamaEmbeddings(base_url="http://localhost:11434", model='all-minilm')
 
 # 2. Convert documents to Embeddings and store them
@@ -45,16 +46,20 @@ vectorstore.persist()
 # embedding_function = embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text')
 
 
-'''
+
 # Load the database from the specified directory with the embedding function
 vectorstore = Chroma(
     persist_directory=persist_directory,
     embedding_function=embedding_function
 )
 '''
+embedding_function = embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text')
+
+vectorstore =  FAISS.load_local("faiss_index", embedding_function, allow_dangerous_deserialization=True)
 
 retriever = vectorstore.as_retriever()
 
+'''
 # 3. Before RAG
 print("Before RAG\n")
 before_rag_template = "{topic}"
@@ -62,6 +67,7 @@ before_rag_prompt = ChatPromptTemplate.from_template(before_rag_template)
 before_rag_chain = before_rag_prompt | model_local | StrOutputParser()
 ques = str(input("Enter question - "))
 print(before_rag_chain.invoke({"topic": ques}))
+
 
 # 4. After RAG
 print("\n########\nAfter RAG\n")
@@ -77,3 +83,21 @@ after_rag_chain = (
     | StrOutputParser()
 )
 print(after_rag_chain.invoke(ques))
+'''
+#ques = str(input("Enter question - "))
+ques = "write a basic rag implementation using ollama embeddings in python"
+context = retriever.invoke(ques)                                                          
+formatted_prompt = f"Question: {ques}\n\nContext: {context}"
+import ollama
+response = ollama.chat(model='dolphin-phi', messages=[
+  {
+    'role': 'user',
+    'content': formatted_prompt,
+  }],
+stream=True
+)
+
+for chunk in response:
+  print(chunk['message']['content'], end='', flush=True)
+
+

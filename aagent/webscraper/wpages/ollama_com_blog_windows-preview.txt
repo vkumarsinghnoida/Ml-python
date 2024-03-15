@@ -1,0 +1,142 @@
+
+
+
+Windows preview · Ollama Blog
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Models
+Search
+Blog
+Discord
+GitHub
+Download
+Sign in
+
+
+
+
+
+Blog
+
+        Discord
+      
+
+        GitHub
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Models
+Sign in
+
+        Download
+      
+
+
+
+
+
+Windows preview
+February 15, 2024
+
+
+Ollama is now available on Windows in preview, making it possible to pull, run and create large language models in a new native Windows experience. Ollama on Windows includes built-in GPU acceleration, access to the full model library, and the Ollama API including OpenAI compatibility.
+Hardware acceleration
+Ollama accelerates running models using NVIDIA GPUs as well as modern CPU instruction sets such as AVX and AVX2 if available. No configuration or virtualization required!
+
+
+
+Full access to the model library
+The full Ollama model library is available to run on Windows, including vision models. When running vision models such as LLaVA 1.6, images can be dragged and dropped into ollama run to add them to a message.
+
+
+
+Always-on Ollama API
+Ollama’s API automatically runs in the background, serving on http://localhost:11434. Tools and applications can connect to it without any additional setup.
+
+For example, here’s how to invoke Ollama’s API using PowerShell:
+(Invoke-WebRequest -method POST -Body '{"model":"llama2", "prompt":"Why is the sky blue?", "stream": false}' -uri http://localhost:11434/api/generate ).Content | ConvertFrom-json
+
+Ollama on Windows also supports the same OpenAI compatibility as on other platforms, making it possible to use existing tooling built for OpenAI with local models via Ollama.
+Get started
+To get started with the Ollama on Windows Preview:
+
+Download Ollama on Windows
+Double-click the installer, OllamaSetup.exe
+After installing, open your favorite terminal and run ollama run llama2 to run a model
+
+Ollama will prompt for updates as new releases become available. We’d love your feedback! If you encounter any issues please let us know by opening an issue or by joining the Discord server.
+
+
+
+
+

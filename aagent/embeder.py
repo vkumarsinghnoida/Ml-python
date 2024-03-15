@@ -21,10 +21,11 @@ vectorstore = Chroma.from_documents(
     persist_directory=persist_directory
 )
 vectorstore.persist()
-'''
-vectorsctore = FAISS.from_documents(doc_splits, embedding_function)
-vectorstore.save_local("faiss_index")
 
+vectorstore = FAISS.from_documents(doc_splits, embedding_function)
+vectorstore.save_local("faiss_index")
+'''
+vectorstore =  FAISS.load_local("faiss_index", embedding_function, allow_dangerous_deserialization=True)
 #vectorstore = Chroma(persist_directory=persist_directory, embedding_function=embedding_function)
 retriever = vectorstore.as_retriever()
 
@@ -32,9 +33,18 @@ retriever = vectorstore.as_retriever()
 input_string = "basic ollama embedding rag usage "
 context = retriever.get_relevant_documents(input_string)
 print(context)
+print( " jjf          \
+      $)_++$ \
+sjfbskfnnd   \
+ejjf\
+\
+dnfn")
+context = vectorstore.similarity_search(input_string)
+print(context[0].page_content)
 
-context = retriever.similarity_search(input_string)
-print(context)
+context = retriever.get_relevant_documents(input_string)
+for a in context:
+    print(a.page_content)
 
 
 def query_database(query, vectorstore):

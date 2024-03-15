@@ -1,0 +1,1703 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GitHub - ollama/ollama: Get up and running with Llama 2, Mistral, Gemma, and other large language models.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Skip to content
+
+
+
+
+
+
+
+
+
+
+
+
+
+Toggle navigation
+
+
+
+
+
+
+
+
+
+
+          Sign in
+        
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Product
+        
+
+
+
+
+
+
+
+
+
+
+
+
+Actions
+        Automate any workflow
+      
+
+
+
+
+
+
+
+Packages
+        Host and manage packages
+      
+
+
+
+
+
+
+
+Security
+        Find and fix vulnerabilities
+      
+
+
+
+
+
+
+
+Codespaces
+        Instant dev environments
+      
+
+
+
+
+
+
+
+Copilot
+        Write better code with AI
+      
+
+
+
+
+
+
+
+Code review
+        Manage code changes
+      
+
+
+
+
+
+
+
+Issues
+        Plan and track work
+      
+
+
+
+
+
+
+
+Discussions
+        Collaborate outside of code
+      
+
+
+
+
+Explore
+
+
+
+      All features
+
+    
+
+
+
+      Documentation
+
+    
+
+
+
+
+
+      GitHub Skills
+
+    
+
+
+
+
+
+      Blog
+
+    
+
+
+
+
+
+
+
+
+
+        Solutions
+        
+
+
+
+
+
+For
+
+
+
+      Enterprise
+
+    
+
+
+
+      Teams
+
+    
+
+
+
+      Startups
+
+    
+
+
+
+      Education
+
+    
+
+
+
+
+
+
+By Solution
+
+
+
+      CI/CD & Automation
+
+    
+
+
+
+      DevOps
+
+    
+
+
+
+      DevSecOps
+
+    
+
+
+
+
+
+
+Resources
+
+
+
+      Learning Pathways
+
+    
+
+
+
+
+
+      White papers, Ebooks, Webinars
+
+    
+
+
+
+
+
+      Customer Stories
+
+    
+
+
+
+      Partners
+
+    
+
+
+
+
+
+
+
+
+
+        Open Source
+        
+
+
+
+
+
+
+
+
+
+GitHub Sponsors
+        Fund open source developers
+      
+
+
+
+
+
+
+
+
+The ReadME Project
+        GitHub community articles
+      
+
+
+
+
+Repositories
+
+
+
+      Topics
+
+    
+
+
+
+      Trending
+
+    
+
+
+
+      Collections
+
+    
+
+
+
+
+
+
+Pricing
+
+
+
+
+
+
+
+
+
+
+
+
+Search or jump to...
+
+
+
+
+
+
+
+Search code, repositories, users, issues, pull requests...
+
+ 
+
+
+
+
+        Search
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+Clear
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+              Search syntax tips
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Provide feedback
+      
+
+
+
+
+
+
+
+
+
+ 
+We read every piece of feedback, and take your input very seriously.
+
+
+Include my email address so I can be contacted
+
+
+     Cancel
+
+    Submit feedback
+
+
+
+
+
+
+
+
+
+
+        Saved searches
+      
+Use saved searches to filter your results more quickly
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+Name
+
+
+
+
+
+
+Query
+
+
+
+            To see all available qualifiers, see our documentation.
+          
+ 
+
+
+
+
+
+     Cancel
+
+    Create saved search
+
+
+
+
+
+
+
+
+              Sign in
+            
+
+
+              Sign up
+            
+
+
+
+
+
+
+
+
+
+You signed in with another tab or window. Reload to refresh your session.
+You signed out in another tab or window. Reload to refresh your session.
+You switched accounts on another tab or window. Reload to refresh your session.
+ 
+
+
+Dismiss alert
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ollama
+ 
+/
+
+ollama
+
+Public
+
+
+
+
+
+ 
+
+Notifications
+
+
+
+ 
+
+Fork
+    3.2k
+
+
+
+
+ 
+
+
+          Star
+ 47.6k
+  
+
+
+
+
+
+
+
+
+
+
+
+
+        Get up and running with Llama 2, Mistral, Gemma, and other large language models.
+      
+
+
+
+
+
+ollama.com
+
+
+License
+
+
+
+
+
+     MIT license
+    
+
+
+
+
+
+
+47.6k
+          stars
+ 
+
+
+
+3.2k
+          forks
+ 
+
+
+
+Branches
+ 
+
+
+
+Tags
+ 
+
+
+
+Activity
+ 
+
+
+
+ 
+
+
+          Star
+
+  
+
+
+
+
+
+ 
+
+Notifications
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Code
+
+
+
+
+
+
+
+Issues
+486
+
+
+
+
+
+
+Pull requests
+142
+
+
+
+
+
+
+Actions
+
+
+
+
+
+
+
+Security
+
+
+
+
+
+
+
+Insights
+
+
+
+ 
+
+ 
+
+
+Additional navigation options
+
+
+ 
+
+
+
+
+
+
+
+
+
+          Code
+
+
+
+
+
+
+
+
+
+
+          Issues
+
+
+
+
+
+
+
+
+
+
+          Pull requests
+
+
+
+
+
+
+
+
+
+
+          Actions
+
+
+
+
+
+
+
+
+
+
+          Security
+
+
+
+
+
+
+
+
+
+
+          Insights
+
+
+
+
+
+ 
+
+
+
+
+
+ollama/ollama
+
+
+
+
+
+
+
+This commit does not belong to any branch on this repository, and may belong to a fork outside of the repository.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    mainBranchesTagsGo to fileCodeFolders and filesNameNameLast commit messageLast commit dateLatest commit History2,184 Commits.github.github  apiapi  appapp  authauth  cmdcmd  convertconvert  docsdocs  examplesexamples  formatformat  gpugpu  llmllm  macappmacapp  openaiopenai  parserparser  progressprogress  readlinereadline  scriptsscripts  serverserver  versionversion  .dockerignore.dockerignore  .gitignore.gitignore  .gitmodules.gitmodules  .golangci.yaml.golangci.yaml  .prettierrc.json.prettierrc.json  DockerfileDockerfile  LICENSELICENSE  README.mdREADME.md  go.modgo.mod  go.sumgo.sum  main.gomain.go  View all filesRepository files navigationREADMEMIT license
+
+
+Ollama
+
+Get up and running with large language models locally.
+macOS
+Download
+Windows preview
+Download
+Linux
+curl -fsSL https://ollama.com/install.sh | sh
+
+Manual install instructions
+Docker
+The official Ollama Docker image ollama/ollama is available on Docker Hub.
+Libraries
+
+ollama-python
+ollama-js
+
+Quickstart
+To run and chat with Llama 2:
+ollama run llama2
+
+Model library
+Ollama supports a list of models available on ollama.com/library
+Here are some example models that can be downloaded:
+
+
+
+Model
+Parameters
+Size
+Download
+
+
+
+
+Llama 2
+7B
+3.8GB
+ollama run llama2
+
+
+Mistral
+7B
+4.1GB
+ollama run mistral
+
+
+Dolphin Phi
+2.7B
+1.6GB
+ollama run dolphin-phi
+
+
+Phi-2
+2.7B
+1.7GB
+ollama run phi
+
+
+Neural Chat
+7B
+4.1GB
+ollama run neural-chat
+
+
+Starling
+7B
+4.1GB
+ollama run starling-lm
+
+
+Code Llama
+7B
+3.8GB
+ollama run codellama
+
+
+Llama 2 Uncensored
+7B
+3.8GB
+ollama run llama2-uncensored
+
+
+Llama 2 13B
+13B
+7.3GB
+ollama run llama2:13b
+
+
+Llama 2 70B
+70B
+39GB
+ollama run llama2:70b
+
+
+Orca Mini
+3B
+1.9GB
+ollama run orca-mini
+
+
+Vicuna
+7B
+3.8GB
+ollama run vicuna
+
+
+LLaVA
+7B
+4.5GB
+ollama run llava
+
+
+Gemma
+2B
+1.4GB
+ollama run gemma:2b
+
+
+Gemma
+7B
+4.8GB
+ollama run gemma:7b
+
+
+
+
+Note: You should have at least 8 GB of RAM available to run the 7B models, 16 GB to run the 13B models, and 32 GB to run the 33B models.
+
+Customize a model
+Import from GGUF
+Ollama supports importing GGUF models in the Modelfile:
+
+
+Create a file named Modelfile, with a FROM instruction with the local filepath to the model you want to import.
+FROM ./vicuna-33b.Q4_0.gguf
+
+
+
+Create the model in Ollama
+ollama create example -f Modelfile
+
+
+
+Run the model
+ollama run example
+
+
+
+Import from PyTorch or Safetensors
+See the guide on importing models for more information.
+Customize a prompt
+Models from the Ollama library can be customized with a prompt. For example, to customize the llama2 model:
+ollama pull llama2
+
+Create a Modelfile:
+FROM llama2
+
+# set the temperature to 1 [higher is more creative, lower is more coherent]
+PARAMETER temperature 1
+
+# set the system message
+SYSTEM """
+You are Mario from Super Mario Bros. Answer as Mario, the assistant, only.
+"""
+
+Next, create and run the model:
+ollama create mario -f ./Modelfile
+ollama run mario
+>>> hi
+Hello! It's your friend Mario.
+
+For more examples, see the examples directory. For more information on working with a Modelfile, see the Modelfile documentation.
+CLI Reference
+Create a model
+ollama create is used to create a model from a Modelfile.
+ollama create mymodel -f ./Modelfile
+
+Pull a model
+ollama pull llama2
+
+
+This command can also be used to update a local model. Only the diff will be pulled.
+
+Remove a model
+ollama rm llama2
+
+Copy a model
+ollama cp llama2 my-llama2
+
+Multiline input
+For multiline input, you can wrap text with """:
+>>> """Hello,
+... world!
+... """
+I'm a basic program that prints the famous "Hello, world!" message to the console.
+
+Multimodal models
+>>> What's in this image? /Users/jmorgan/Desktop/smile.png
+The image features a yellow smiley face, which is likely the central focus of the picture.
+
+Pass in prompt as arguments
+$ ollama run llama2 "Summarize this file: $(cat README.md)"
+ Ollama is a lightweight, extensible framework for building and running language models on the local machine. It provides a simple API for creating, running, and managing models, as well as a library of pre-built models that can be easily used in a variety of applications.
+
+List models on your computer
+ollama list
+
+Start Ollama
+ollama serve is used when you want to start ollama without running the desktop application.
+Building
+Install cmake and go:
+brew install cmake go
+
+Then generate dependencies:
+go generate ./...
+
+Then build the binary:
+go build .
+
+More detailed instructions can be found in the developer guide
+Running local builds
+Next, start the server:
+./ollama serve
+
+Finally, in a separate shell, run a model:
+./ollama run llama2
+
+REST API
+Ollama has a REST API for running and managing models.
+Generate a response
+curl http://localhost:11434/api/generate -d '{
+  "model": "llama2",
+  "prompt":"Why is the sky blue?"
+}'
+
+Chat with a model
+curl http://localhost:11434/api/chat -d '{
+  "model": "mistral",
+  "messages": [
+    { "role": "user", "content": "why is the sky blue?" }
+  ]
+}'
+
+See the API documentation for all endpoints.
+Community Integrations
+Web & Desktop
+
+Bionic GPT
+Enchanted (macOS native)
+HTML UI
+Chatbot UI
+Typescript UI
+Minimalistic React UI for Ollama Models
+Open WebUI
+Ollamac
+big-AGI
+Cheshire Cat assistant framework
+Amica
+chatd
+Ollama-SwiftUI
+MindMac
+NextJS Web Interface for Ollama
+Msty
+Chatbox
+WinForm Ollama Copilot
+NextChat with Get Started Doc
+Odin Runes
+LLM-X: Progressive Web App
+
+Terminal
+
+oterm
+Ellama Emacs client
+Emacs client
+gen.nvim
+ollama.nvim
+ollama-chat.nvim
+ogpt.nvim
+gptel Emacs client
+Oatmeal
+cmdh
+tenere
+llm-ollama for Datasette's LLM CLI.
+ShellOracle
+
+Database
+
+MindsDB
+
+Package managers
+
+Pacman
+Helm Chart
+
+Libraries
+
+LangChain and LangChain.js with example
+LangChainGo with example
+LangChain4j with example
+LlamaIndex
+LangChain4j
+LiteLLM
+OllamaSharp for .NET
+Ollama for Ruby
+Ollama-rs for Rust
+Ollama4j for Java
+ModelFusion Typescript Library
+OllamaKit for Swift
+Ollama for Dart
+Ollama for Laravel
+LangChainDart
+Semantic Kernel - Python
+Haystack
+Elixir LangChain
+Ollama for R - rollama
+Ollama-ex for Elixir
+Ollama Connector for SAP ABAP
+
+Mobile
+
+Enchanted
+Maid
+
+Extensions & Plugins
+
+Raycast extension
+Discollama (Discord bot inside the Ollama discord channel)
+Continue
+Obsidian Ollama plugin
+Logseq Ollama plugin
+NotesOllama (Apple Notes Ollama plugin)
+Dagger Chatbot
+Discord AI Bot
+Ollama Telegram Bot
+Hass Ollama Conversation
+Rivet plugin
+Llama Coder (Copilot alternative using Ollama)
+Obsidian BMO Chatbot plugin
+Copilot for Obsidian plugin
+Obsidian Local GPT plugin
+Open Interpreter
+twinny (Copilot and Copilot chat alternative using Ollama)
+Wingman-AI (Copilot code and chat alternative using Ollama and HuggingFace)
+Page Assist (Chrome Extension)
+
+   
+
+
+
+
+
+
+
+
+About
+
+        Get up and running with Llama 2, Mistral, Gemma, and other large language models.
+      
+
+
+
+
+
+ollama.com
+
+
+Topics
+
+
+
+  go
+
+
+  golang
+
+
+  llama
+
+
+  mistral
+
+
+  llm
+
+
+  llms
+
+
+  llama2
+
+
+  ollama
+
+
+
+Resources
+
+
+
+
+
+        Readme
+ 
+License
+
+
+
+
+
+     MIT license
+    
+
+
+
+
+
+
+
+
+Activity
+ 
+
+
+
+
+
+Custom properties
+ 
+Stars
+
+
+
+
+
+47.6k
+      stars
+ 
+Watchers
+
+
+
+
+
+304
+      watching
+ 
+Forks
+
+
+
+
+
+3.2k
+      forks
+ 
+
+
+          Report repository
+ 
+
+
+
+
+
+
+
+    Releases
+      51
+
+
+
+
+
+
+
+v0.1.29
+
+          Latest
+ 
+Mar 10, 2024
+
+ 
+
+        + 50 releases
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Contributors
+      154
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      + 140 contributors
+
+
+
+
+
+Languages
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Go
+79.0%
+
+
+
+
+
+
+
+Shell
+5.9%
+
+
+
+
+
+
+
+C
+4.2%
+
+
+
+
+
+
+
+TypeScript
+3.1%
+
+
+
+
+
+
+
+PowerShell
+2.8%
+
+
+
+
+
+
+
+C++
+2.2%
+
+
+
+
+
+
+
+Other
+2.8%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Footer
+
+
+
+
+
+
+
+
+        © 2024 GitHub, Inc.
+      
+
+
+Footer navigation
+
+
+Terms
+
+
+Privacy
+
+
+Security
+
+
+Status
+
+
+Docs
+
+
+Contact
+
+
+
+
+      Manage cookies
+    
+
+
+
+
+
+      Do not share my personal information
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    You can’t perform that action at this time.
+  
+
+
+
+
+
+
+
+
+
+
+
+

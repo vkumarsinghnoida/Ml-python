@@ -1,0 +1,9 @@
+https://python.langchain.com/docs/integrations/vectorstores/chroma
+https://github.com/ollama/ollama
+https://github.com/ollama/ollama-python
+https://ollama.com/
+https://ollama.com/blog/windows-preview
+https://ollama.com/blog/openai-compatibility
+https://github.com/ollama/ollama/blob/main/docs/tutorials.md
+https://ollama.com/blog/python-javascript-libraries
+https://mer.vin/2024/02/

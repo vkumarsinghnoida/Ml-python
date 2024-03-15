@@ -1,5 +1,6 @@
 #!/root/miniconda2/envs/aagent/bin/python
 
+from langchain_community.vectorstores import FAISS
 import os
 from groq import Groq
 import ollama
@@ -12,7 +13,8 @@ client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # Initialize the OllamaEmbeddings and Chroma vector store
 embedding_function = OllamaEmbeddings(model='nomic-embed-text')
-vectorstore = Chroma(persist_directory="./hacker", embedding_function=embedding_function)
+#vectorstore = Chroma(persist_directory="./hacker", embedding_function=embedding_function)
+vectorstore =  FAISS.load_local("faiss_index", embedding_function, allow_dangerous_deserialization=True)
 retriever = vectorstore.as_retriever()
 
 def list_saved_conversations():
@@ -111,7 +113,8 @@ def chat_with_bot():
     # Initialize the conversation history
     conversation_history = [{
             "role": "system",
-            "content": "Provide only bash shell commands for ubuntu linux without any description. If there is a lack of details, provide most logical solution.Ensure the output is a valid shell command.If multiple steps required try to combine them together using &&.Provide only plain text without Markdown formatting.Do not provide markdown formatting such as ```. remember your last commands and give updates if asked for something similar"
+     #       "content": "Provide only bash shell commands for ubuntu linux without any description. If there is a lack of details, provide most logical solution.Ensure the output is a valid shell command.If multiple steps required try to combine them together using &&.Provide only plain text without Markdown formatting.Do not provide markdown formatting such as ```. remember your last commands and give updates if asked for something similar"
+            "content": "you are an extremely helpful and smart assistant"
         }]
 
     # Check if there are any saved conversations
@@ -147,6 +150,7 @@ def chat_with_bot():
             break
 
         context = retriever.invoke(input_string)
+        print(context)
         formatted_prompt = f"Question: {input_string}\n\nContext: {context}"
 
         conversation_history.append({"role": "user", "content": formatted_prompt})
