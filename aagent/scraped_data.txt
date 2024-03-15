@@ -1,0 +1,2306 @@
+
+
+
+
+
+
+
+
+
+February 2024 - Mervin Praison
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Skip to the content
+
+
+
+
+
+
+ 
+Search
+
+
+
+Mervin PraisonSite Reliability Engineer
+
+
+
+
+ 
+Menu
+
+
+
+
+
+
+AI
+DevOps
+Coding
+Contact
+
+
+
+
+
+
+ Search
+
+
+
+
+
+
+
+
+
+
+
+
+			Search for:		
+
+
+
+
+
+
+					Close search				
+ 
+
+
+
+
+
+
+
+
+
+Close Menu
+ 
+
+
+AI
+DevOps
+Coding
+Contact
+
+
+
+
+
+
+Github Profile
+WordPress Profile
+Kaggle Profile
+
+
+
+
+
+
+
+
+
+Month: February 2024
+
+
+
+
+
+
+
+					Categories				
+
+AutoGen 
+
+AutoGen Graph
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 29, 2024
+
+
+
+
+
+
+
+
+pip install -U "pyautogen[graph]>=0.2.11" matplotlib networkx
+import random
+import matplotlib.pyplot as plt
+import networkx as nx
+import autogen
+from autogen.agentchat.conversable_agent import ConversableAgent
+from autogen.agentchat.assistant_agent import AssistantAgent
+from autogen.agentchat.groupchat import GroupChat
+from autogen.graph_utils import visualize_speaker_transitions_dict
+
+config_list_gpt4 = {
+    "timeout": 600,
+    "cache_seed": 44,
+    "temperature": 0,
+    "config_list": [{"model": "gpt-4-turbo-preview"}],
+}
+
+def get_agent_of_name(agents, name) -> ConversableAgent:
+    for agent in agents:
+        if agent.name == name:
+            return agent
+
+agents = []
+speaker_transitions_dict = {}
+secret_values = {}
+
+for prefix in ["A", "B", "C"]:
+    for i in range(3):
+        node_id = f"{prefix}{i}"
+        secret_value = random.randint(1, 5)
+        secret_values[node_id] = secret_value
+        agents.append(
+            AssistantAgent(
+                name=node_id,
+                system_message=f"""Your name is {node_id}.
+Do not respond as the speaker named in the NEXT tag if your name is not in the NEXT tag. Instead, suggest a relevant team leader to handle the mis-tag, with the NEXT: tag.
+
+You have {secret_value} chocolates.
+
+The list of players are [A0, A1, A2, B0, B1, B2, C0, C1, C2].
+
+Your first character of your name is your team, and your second character denotes that you are a team leader if it is 0.
+CONSTRAINTS: Team members can only talk within the team, whilst team leader can talk to team leaders of other teams but not team members of other teams.
+
+You can use NEXT: to suggest the next speaker. You have to respect the CONSTRAINTS, and can only suggest one player from the list of players, i.e., do not suggest A3 because A3 is not from the list of players.
+Team leaders must make sure that they know the sum of the individual chocolate count of all three players in their own team, i.e., A0 is responsible for team A only.
+
+Keep track of the player's tally using a JSON format so that others can check the total tally. Use
+A0:?, A1:?, A2:?,
+B0:?, B1:?, B2:?,
+C0:?, C1:?, C2:?
+
+If you are the team leader, you should aggregate your team's total chocolate count to cooperate.
+Once the team leader know their team's tally, they can suggest another team leader for them to find their team tally, because we need all three team tallys to succeed.
+Use NEXT: to suggest the next speaker, e.g., NEXT: A0.
+
+Once we have the total tally from all nine players, sum up all three teams' tally, then terminate the discussion using TERMINATE.
+""",
+                llm_config=config_list_gpt4,
+            )
+        )
+        speaker_transitions_dict[agents[-1]] = []
+
+for prefix in ["A", "B", "C"]:
+    for i in range(3):
+        source_id = f"{prefix}{i}"
+        for j in range(3):
+            target_id = f"{prefix}{j}"
+            if i != j:
+                speaker_transitions_dict[get_agent_of_name(agents, source_id)].append(get_agent_of_name(agents, target_id))
+
+speaker_transitions_dict[get_agent_of_name(agents, "A0")].append(get_agent_of_name(agents, "B0"))
+speaker_transitions_dict[get_agent_of_name(agents, "A0")].append(get_agent_of_name(agents, "C0"))
+speaker_transitions_dict[get_agent_of_name(agents, "B0")].append(get_agent_of_name(agents, "A0"))
+speaker_transitions_dict[get_agent_of_name(agents, "B0")].append(get_agent_of_name(agents, "C0"))
+speaker_transitions_dict[get_agent_of_name(agents, "C0")].append(get_agent_of_name(agents, "A0"))
+speaker_transitions_dict[get_agent_of_name(agents, "C0")].append(get_agent_of_name(agents, "B0"))
+
+graph = nx.DiGraph()
+graph.add_nodes_from([agent.name for agent in agents])
+for key, value in speaker_transitions_dict.items():
+    for agent in value:
+        graph.add_edge(key.name, agent.name)
+
+plt.figure(figsize=(12, 10))
+pos = nx.spring_layout(graph)
+nx.draw(graph, pos, with_labels=True, font_weight="bold")
+for node, (x, y) in pos.items():
+    secret_value = secret_values[node]
+    plt.text(x, y + 0.1, s=f"Secret: {secret_value}", horizontalalignment="center")
+plt.show()
+
+def is_termination_msg(content) -> bool:
+    have_content = content.get("content", None) is not None
+    if have_content and "TERMINATE" in content["content"]:
+        return True
+    return False
+
+user_proxy = autogen.UserProxyAgent(
+    name="User_proxy",
+    system_message="Terminator admin.",
+    code_execution_config=False,
+    is_termination_msg=is_termination_msg,
+    human_input_mode="NEVER",
+)
+
+agents.append(user_proxy)
+
+group_chat = GroupChat(
+    agents=agents,
+    messages=[],
+    max_round=20,
+    allowed_or_disallowed_speaker_transitions=speaker_transitions_dict,
+    speaker_transitions_type="allowed",
+)
+
+manager = autogen.GroupChatManager(
+    groupchat=group_chat,
+    llm_config=config_list_gpt4,
+    code_execution_config=False,
+    is_termination_msg=is_termination_msg,
+)
+
+agents[0].initiate_chat(
+    manager,
+    message="""
+There are 9 players in this game, split equally into Teams A, B, C. Therefore each team has 3 players, including the team leader.
+The task is to find out the sum of chocolate count from all nine players. I will now start with my team.
+NEXT: A1""",
+)
+
+
+Output
+❯ python graph.py
+WARNING:root:Warning: There are isolated agent nodes, there are not incoming nor outgoing edges. Isolated agents: ['User_proxy']
+WARNING:root:Warning: The set of agents in allowed_speaker_transitions do not match agents. Offending agents: ['User_proxy']
+A0 (to chat_manager):
+
+
+There are 9 players in this game, split equally into Teams A, B, C. Therefore each team has 3 players, including the team leader.
+The task is to find out the sum of chocolate count from all nine players. I will now start with my team.
+NEXT: A1
+
+--------------------------------------------------------------------------------
+A1 (to chat_manager):
+
+A0:?, A1:4, A2:?,
+B0:?, B1:?, B2:?,
+C0:?, C1:?, C2:?
+
+I have 4 chocolates. Let's find out how many chocolates A2 has.
+NEXT: A2
+
+--------------------------------------------------------------------------------
+A2 (to chat_manager):
+
+A0:?, A1:4, A2:5,
+B0:?, B1:?, B2:?,
+C0:?, C1:?, C2:?
+
+I have 5 chocolates. Now, we need to report back to our team leader, A0, to aggregate our team's total chocolate count.
+NEXT: A0
+
+--------------------------------------------------------------------------------
+A0 (to chat_manager):
+
+A0:5, A1:4, A2:5,
+B0:?, B1:?, B2:?,
+C0:?, C1:?, C2:?
+
+As the team leader of Team A, I have aggregated our team's total chocolate count. Team A has a total of 14 chocolates. It's time to find out Team B's total chocolate count.
+NEXT: B0
+
+--------------------------------------------------------------------------------
+B0 (to chat_manager):
+
+A0:5, A1:4, A2:5,
+B0:3, B1:?, B2:?,
+C0:?, C1:?, C2:?
+
+As the team leader of Team B, I will start by sharing that I have 3 chocolates. Now, let's find out how many chocolates B1 has.
+NEXT: B1
+
+--------------------------------------------------------------------------------
+B1 (to chat_manager):
+
+A0:5, A1:4, A2:5,
+B0:3, B1:1, B2:?,
+C0:?, C1:?, C2:?
+
+I have 1 chocolate. Let's find out how many chocolates B2 has.
+NEXT: B2
+
+--------------------------------------------------------------------------------
+B2 (to chat_manager):
+
+A0:5, A1:4, A2:5,
+B0:3, B1:1, B2:2,
+C0:?, C1:?, C2:?
+
+I have 2 chocolates. Now, we need to report back to our team leader, B0, to aggregate our team's total chocolate count.
+NEXT: B0
+
+--------------------------------------------------------------------------------
+B0 (to chat_manager):
+
+A0:5, A1:4, A2:5,
+B0:3, B1:1, B2:2,
+C0:?, C1:?, C2:?
+
+As the team leader of Team B, I have aggregated our team's total chocolate count. Team B has a total of 6 chocolates. It's time to find out Team C's total chocolate count.
+NEXT: C0
+
+--------------------------------------------------------------------------------
+C0 (to chat_manager):
+
+A0:5, A1:4, A2:5,
+B0:3, B1:1, B2:2,
+C0:1, C1:?, C2:?
+
+As the team leader of Team C, I have 1 chocolate. Now, let's find out how many chocolates C1 has.
+NEXT: C1
+
+--------------------------------------------------------------------------------
+C1 (to chat_manager):
+
+A0:5, A1:4, A2:5,
+B0:3, B1:1, B2:2,
+C0:1, C1:4, C2:?
+
+I have 4 chocolates. Let's find out how many chocolates C2 has.
+NEXT: C2
+
+--------------------------------------------------------------------------------
+C2 (to chat_manager):
+
+A0:5, A1:4, A2:5,
+B0:3, B1:1, B2:2,
+C0:1, C1:4, C2:5
+
+I have 5 chocolates. Now, we need to report back to our team leader, C0, to aggregate our team's total chocolate count.
+NEXT: C0
+
+--------------------------------------------------------------------------------
+C0 (to chat_manager):
+
+A0:5, A1:4, A2:5,
+B0:3, B1:1, B2:2,
+C0:1, C1:4, C2:5
+
+As the team leader of Team C, I have aggregated our team's total chocolate count. Team C has a total of 10 chocolates. Now that we have the total tally from all three teams, we can sum up all three teams' tally.
+
+Team A: 14 chocolates
+Team B: 6 chocolates
+Team C: 10 chocolates
+
+Total: 30 chocolates
+
+TERMINATE
+
+--------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+					Categories				
+
+API 
+
+Mistral Function Calling
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 29, 2024
+
+
+
+
+
+
+
+
+pip install -U mistralai pandas yfinance rich
+export MISTRAL_API_KEY=xxxxxxxxxxxx
+Example 1: Stock Price
+import pandas as pd
+import functools, json
+from rich import print as rich_print
+import yfinance as yf
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
+
+model = "mistral-large-latest"
+client = MistralClient()
+
+# Updated function to get stock price
+def get_stock_price(symbol: str) -> str:
+    stock = yf.Ticker(symbol)
+    hist = stock.history(period="1d")
+    current_price = hist['Close'].iloc[0]  # Extract closing price
+    print(f"Current price for {symbol}: {current_price}")
+    return json.dumps({'price': current_price})
+
+# Integrating the stock price function into tools
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_stock_price",
+            "description": "Get the current stock price of a company",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "The stock symbol of the company.",
+                    }
+                },
+                "required": ["symbol"],
+            },
+        },
+    }
+]
+
+names_to_functions = {
+    'get_stock_price': get_stock_price,
+}
+
+# Example user query
+user_query = "What's the stock price of AAPL?"
+print(f"User query: {user_query}")
+messages = [
+    ChatMessage(role="user", content=user_query)
+]
+
+response = client.chat(
+    model=model,
+    messages=messages,
+    tools=tools,
+    tool_choice="auto"
+)
+messages.append(response.choices[0].message)
+rich_print(messages)
+
+# Execute function
+tool_call = response.choices[0].message.tool_calls[0]
+function_name = tool_call.function.name
+function_params = json.loads(tool_call.function.arguments)
+print(f"\nExecuting function: {function_name} with parameters: {function_params}")
+
+function_result = names_to_functions[function_name](**function_params)
+print(f"Function result: {function_result}")
+
+messages.append(ChatMessage(role="tool", name=function_name, content=function_result))
+
+# Final model answer
+response = client.chat(
+    model=model,
+    messages=messages
+)
+print(f"Final response: {response.choices[0].message.content}")
+print("End of process.")
+rich_print(response)
+
+❯ python app.py
+User query: What's the stock price of AAPL?
+[
+    ChatMessage(role='user', content="What's the stock price of AAPL?", name=None, tool_calls=None),
+    ChatMessage(
+        role='assistant',
+        content='',
+        name=None,
+        tool_calls=[
+            ToolCall(
+                id='null',
+                type=<ToolType.function: 'function'>,
+                function=FunctionCall(name='get_stock_price', arguments='{"symbol": "AAPL"}')
+            )
+        ]
+    )
+]
+
+Executing function: get_stock_price with parameters: {'symbol': 'AAPL'}
+Current price for AAPL: 181.4199981689453
+Function result: {"price": 181.4199981689453}
+Final response: The stock price of AAPL is $181.42.
+End of process.
+ChatCompletionResponse(
+    id='5f77a1aac50747b4b74d3a0e96907c1f',
+    object='chat.completion',
+    created=1709185946,
+    model='mistral-large-latest',
+    choices=[
+        ChatCompletionResponseChoice(
+            index=0,
+            message=ChatMessage(role='assistant', content='The stock price of AAPL is $181.42.', name=None, tool_calls=[]),
+            finish_reason=<FinishReason.stop: 'stop'>
+        )
+    ],
+    usage=UsageInfo(prompt_tokens=79, total_tokens=95, completion_tokens=16)
+)
+Example 2
+import pandas as pd
+import functools, json
+from rich import print as rich_print
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
+
+model = "mistral-large-latest"
+client = MistralClient()
+
+# Database
+data = {
+    'transaction_id': ['T1001', 'T1002', 'T1003', 'T1004', 'T1005'],
+    'customer_id': ['C001', 'C002', 'C003', 'C002', 'C001'],
+    'payment_amount': [125.50, 89.99, 120.00, 54.30, 210.20],
+    'payment_date': ['2021-10-05', '2021-10-06', '2021-10-07', '2021-10-05', '2021-10-08'],
+    'payment_status': ['Paid', 'Unpaid', 'Paid', 'Paid', 'Pending']
+}
+df = pd.DataFrame(data)
+print("Database loaded successfully.")
+
+# Retrieve payment status
+def retrieve_payment_status(df: pd.DataFrame, transaction_id: str) -> str:
+    if transaction_id in df.transaction_id.values:
+        status = df[df.transaction_id == transaction_id].payment_status.item()
+        print(f"Payment status for {transaction_id}: {status}")
+        return json.dumps({'status': status})
+    print(f"Error: Transaction ID {transaction_id} not found.")
+    return json.dumps({'error': 'Transaction ID not found.'})
+
+# Retrieve payment date
+def retrieve_payment_date(df: pd.DataFrame, transaction_id: str) -> str:
+    if transaction_id in df.transaction_id.values:
+        date = df[df.transaction_id == transaction_id].payment_date.item()
+        print(f"Payment date for {transaction_id}: {date}")
+        return json.dumps({'date': date})
+    print(f"Error: Transaction ID {transaction_id} not found.")
+    return json.dumps({'error': 'Transaction ID not found.'})
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "retrieve_payment_status",
+            "description": "Get payment status of a transaction",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "transaction_id": {
+                        "type": "string",
+                        "description": "The transaction id.",
+                    }
+                },
+                "required": ["transaction_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "retrieve_payment_date",
+            "description": "Get payment date of a transaction",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "transaction_id": {
+                        "type": "string",
+                        "description": "The transaction id.",
+                    }
+                },
+                "required": ["transaction_id"],
+            },
+        },
+    }
+]
+
+names_to_functions = {
+  'retrieve_payment_status': functools.partial(retrieve_payment_status, df=df),
+  'retrieve_payment_date': functools.partial(retrieve_payment_date, df=df)
+}
+
+# User query
+user_query = "What's the status of my transaction?"
+print(f"User query: {user_query}")
+messages = [
+    ChatMessage(role="user", content=user_query)
+]
+
+# Model response
+response = client.chat(
+    model=model,
+    messages=messages,
+    tools=tools,
+    tool_choice="auto"
+)
+print(f"Model response: {response.choices[0].message.content}")
+messages.append(ChatMessage(role="assistant", content=response.choices[0].message.content))
+transaction_details = "My transaction ID is T1001."
+print(f"Transaction details provided: {transaction_details}")
+messages.append(ChatMessage(role="user", content=transaction_details))
+
+response = client.chat(
+    model=model,
+    messages=messages,
+    tools=tools,
+    tool_choice="auto"
+)
+messages.append(response.choices[0].message)
+
+# Execute function
+tool_call = response.choices[0].message.tool_calls[0]
+function_name = tool_call.function.name
+function_params = json.loads(tool_call.function.arguments)
+print(f"\nExecuting function: {function_name} with parameters: {function_params}")
+
+function_result = names_to_functions[function_name](**function_params)
+print(f"Function result: {function_result}")
+
+messages.append(ChatMessage(role="tool", name=function_name, content=function_result))
+
+# Final model answer
+response = client.chat(
+    model=model,
+    messages=messages
+)
+rich_print(messages)
+print(f"Final response: {response.choices[0].message.content}")
+
+
+
+
+
+
+
+
+
+
+
+
+					Categories				
+
+API 
+
+Anthropic Claude API
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 28, 2024
+
+
+
+
+
+
+
+
+export ANTHROPIC_API_KEY=xxxxxxxxxxxxx
+curl -X POST https://api.anthropic.com/v1/messages \
+     --header "x-api-key: $ANTHROPIC_API_KEY" \
+     --header "anthropic-version: 2023-06-01" \
+     --header "content-type: application/json" \
+     --data \
+'{
+    "model": "claude-2.1",
+    "max_tokens": 1024,
+    "messages": [
+        {"role": "user", "content": "Daily meal plan for me"}
+    ]
+}'
+import anthropic
+
+client = anthropic.Anthropic()
+
+message = client.messages.create(
+    model="claude-2.1",
+    max_tokens=1024,
+    messages=[
+        {"role": "user", "content": "Give me a daily meal plan"}
+    ]
+)
+print(message.content[0].text)
+import anthropic
+
+client = anthropic.Anthropic()
+
+with client.messages.stream(
+    model="claude-2.1",
+    max_tokens=1024,
+    messages=[
+        {"role": "user", "content": "Give me a daily meal plan"}
+    ]
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+Javascript
+npm install @anthropic-ai/sdk
+package.json example
+{
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.14.1"
+  },
+  "type": "module"
+}
+
+import Anthropic from '@anthropic-ai/sdk';
+
+const client = new Anthropic();
+
+async function main() {
+  const result = await client.completions.create({
+    prompt: `${Anthropic.HUMAN_PROMPT} Give me a daily meal plan ${Anthropic.AI_PROMPT}`,
+    model: 'claude-2.1',
+    max_tokens_to_sample: 300,
+  });
+  console.log(result.completion);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
+Streaming
+import Anthropic from '@anthropic-ai/sdk';
+
+const client = new Anthropic();
+
+async function main() {
+  const result = await client.completions.create({
+    prompt: `${Anthropic.HUMAN_PROMPT} Give me a daily meal plan ${Anthropic.AI_PROMPT}`,
+    model: 'claude-2.1',
+    max_tokens_to_sample: 300,
+  });
+  console.log(result.completion);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
+UI
+import gradio as gr
+import anthropic
+
+def query_anthropic_model(user_question):
+    client = anthropic.Anthropic()
+    message = client.messages.create(
+        model="claude-2.1",
+        max_tokens=1024,
+        messages=[
+            {"role": "user", "content": user_question}
+        ]
+    )
+    return message.content[0].text
+
+iface = gr.Interface(fn=query_anthropic_model,
+                     inputs=gr.Textbox(lines=2, placeholder="Enter your question here..."),
+                     outputs="text",
+                     title="Anthropic Model Query Interface",
+                     description="Type your question to get an answer from the Anthropics model.")
+iface.launch()
+
+
+
+
+
+
+
+
+
+
+
+
+
+					Categories				
+
+API 
+
+Groq API
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 28, 2024
+
+
+
+
+
+
+
+
+pip install groq gradio
+https://console.groq.com/keys
+export GROQ_API_KEY=xxxxxxxxxxxxxxxxx
+curl "https://api.groq.com/openai/v1/chat/completions" \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${GROQ_API_KEY}" \
+  -d '{
+         "messages": [
+           {
+             "role": "user",
+             "content": ""
+           }
+         ],
+         "model": "mixtral-8x7b-32768",
+         "temperature": 0.5,
+         "max_tokens": 1024,
+         "top_p": 1,
+         "stream": false,
+         "stop": null
+       }'
+import os
+
+from groq import Groq
+
+client = Groq(
+    api_key=os.environ.get("GROQ_API_KEY"),
+)
+
+chat_completion = client.chat.completions.create(
+    messages=[
+        {
+            "role": "user",
+            "content": "Explain the importance of low latency LLMs",
+        }
+    ],
+    model="mixtral-8x7b-32768",
+)
+
+print(chat_completion.choices[0].message.content)
+from groq import Groq
+
+client = Groq()
+
+stream = client.chat.completions.create(
+    messages=[
+        {
+            "role": "system",
+            "content": "you are a helpful assistant."
+        },
+        {
+            "role": "user",
+            "content": "Explain the importance of low latency LLMs",
+        }
+    ],
+    model="mixtral-8x7b-32768",
+    temperature=0.5,
+    max_tokens=1024,
+    top_p=1,
+    stop=None,
+    stream=True,
+)
+
+for chunk in stream:
+    print(chunk.choices[0].delta.content, end="")
+
+from groq import Groq
+
+client = Groq()
+
+chat_completion = client.chat.completions.create(
+    messages=[
+        {
+            "role": "system",
+            "content": "you are a helpful assistant."
+        },
+        {
+            "role": "user",
+            "content": "Count to 10.  Your response must begin with \"1, \".  example: 1, 2, 3, ...",
+        }
+    ],
+    model="mixtral-8x7b-32768",
+    temperature=0.5,
+    max_tokens=1024,
+    top_p=1,
+    stop=", 6",
+    stream=False,
+)
+
+print(chat_completion.choices[0].message.content)
+
+import asyncio
+from groq import AsyncGroq
+
+async def main():
+    client = AsyncGroq()
+
+    stream = await client.chat.completions.create(
+        messages=[
+            {
+                "role": "system",
+                "content": "you are a helpful assistant."
+            },
+            {
+                "role": "user",
+                "content": "Explain the importance of low latency LLMs",
+            }
+        ],
+        model="mixtral-8x7b-32768",
+        temperature=0.5,
+        max_tokens=1024,
+        top_p=1,
+        stop=None,
+        stream=True,
+    )
+
+    async for chunk in stream:
+        print(chunk.choices[0].delta.content, end="")
+
+asyncio.run(main())
+import gradio as gr
+import os
+from groq import Groq  # Ensure Groq library supports this usage
+
+def fetch_response(user_input):
+    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {"role": "system", "content": "you are a helpful assistant."},
+            {"role": "user", "content": user_input},
+        ],
+        model="mixtral-8x7b-32768",
+        temperature=0.5,
+        max_tokens=1024,
+        top_p=1,
+        stop=None,
+        stream=False
+    )
+    return chat_completion.choices[0].message.content
+
+iface = gr.Interface(fn=fetch_response, inputs="text", outputs="text", title="Groq Chatbot", description="Ask a question and get a response.")
+iface.launch()
+
+Javascript
+const Groq = require('groq-sdk');
+
+const groq = new Groq();
+async function main() {
+  const chatCompletion = await groq.chat.completions.create({
+    "messages": [
+      {
+        "role": "user",
+        "content": "Explain the importance of low latency LLMs"
+      }
+    ],
+    "model": "mixtral-8x7b-32768",
+    "temperature": 0.5,
+    "max_tokens": 1024,
+    "top_p": 1,
+    "stream": true,
+    "stop": null
+  });
+
+  for await (const chunk of chatCompletion) {
+    process.stdout.write(chunk.choices[0]?.delta?.content || '');
+  }
+}
+
+main();
+
+
+
+
+
+
+
+
+
+
+
+
+					Categories				
+
+Finetuning 
+
+Unsloth Fine Tuning
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 27, 2024
+
+
+
+
+
+
+
+
+pip install huggingface_hub ipython "unsloth[colab] @ git+https://github.com/unslothai/unsloth.git" "unsloth[conda] @ git+https://github.com/unslothai/unsloth.git"
+export HF_TOKEN=xxxxxxxxxxxxx
+# 1. Importing and configurations 
+import os
+from unsloth import FastLanguageModel
+import torch
+from trl import SFTTrainer
+from transformers import TrainingArguments
+from datasets import load_dataset
+
+max_seq_length = 2048
+url = "https://huggingface.co/datasets/laion/OIG/resolve/main/unified_chip2.jsonl"
+dataset = load_dataset("json", data_files = {"train" : url}, split = "train")
+
+# 2. Load Mistral model
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name = "unsloth/mistral-7b-bnb-4bit",
+    max_seq_length = max_seq_length,
+    dtype = None,
+    load_in_4bit = True,
+)
+
+# 3 Before training
+def generate_text(text):
+    inputs = tokenizer(text, return_tensors="pt").to("cuda:0")
+    outputs = model.generate(**inputs, max_new_tokens=20)
+    print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+print("Before training\n")
+generate_text("List the top 5 most popular movies of all time.")
+
+# 4. Do model patching and add fast LoRA weights and training
+model = FastLanguageModel.get_peft_model(
+    model,
+    r = 16,
+    target_modules = ["q_proj", "k_proj", "v_proj", "o_proj",
+                      "gate_proj", "up_proj", "down_proj",],
+    lora_alpha = 16,
+    lora_dropout = 0, # Supports any, but = 0 is optimized
+    bias = "none",    # Supports any, but = "none" is optimized
+    use_gradient_checkpointing = True,
+    random_state = 3407,
+    max_seq_length = max_seq_length,
+    use_rslora = False,  # Rank stabilized LoRA
+    loftq_config = None, # LoftQ
+)
+
+trainer = SFTTrainer(
+    model = model,
+    train_dataset = dataset,
+    dataset_text_field = "text",
+    max_seq_length = max_seq_length,
+    tokenizer = tokenizer,
+    args = TrainingArguments(
+        per_device_train_batch_size = 2,
+        gradient_accumulation_steps = 4,
+        warmup_steps = 10,
+        max_steps = 60,
+        fp16 = not torch.cuda.is_bf16_supported(),
+        bf16 = torch.cuda.is_bf16_supported(),
+        logging_steps = 1,
+        output_dir = "outputs",
+        optim = "adamw_8bit",
+        seed = 3407,
+    ),
+)
+trainer.train()
+
+print("\n ######## \nAfter training\n")
+generate_text("List the top 5 most popular movies of all time.")
+
+# 5. Save and push to Hub
+model.save_pretrained("lora_model")
+model.save_pretrained_merged("outputs", tokenizer, save_method = "merged_16bit",)
+model.push_to_hub_merged("praison/mistral-7b-oig-unsloth-merged", tokenizer, save_method = "merged_16bit", token = os.environ.get("HF_TOKEN"))
+model.push_to_hub("praison/mistral-7b-oig-unsloth", tokenizer, save_method = "lora", token = os.environ.get("HF_TOKEN"))
+Data
+https://huggingface.co/datasets/laion/OIG
+{"text": "<human>: What are some tips for creating a successful business plan?\n<bot>: \n1. Research your target market: Understand who you are selling to, how much competition there is, and the current trends.\n2. Determine your business model and strategies: Decide what products and services you will offer, and how you will compete in the market.\n3. Outline your financial projections: Estimate start-up costs, revenue projections, and operating costs.\n4. Analyze the risks: Identify potential problems and create strategies to mitigate them.\n5. Develop a marketing plan: Strategize how you will promote your business and reach new customers.\n6. Set milestones: Establish short-term and long-term goals and devise a plan to measure progress.", "metadata": {"source": "unified_chip2"}}
+{
+    "text": "<human>: What are some tips for creating a successful business plan?\n<bot>: \n1. Research your target market: Understand who you are selling to, how much competition there is, and the current trends.\n2. Determine your business model and strategies: Decide what products and services you will offer, and how you will compete in the market.\n3. Outline your financial projections: Estimate start-up costs, revenue projections, and operating costs.\n4. Analyze the risks: Identify potential problems and create strategies to mitigate them.\n5. Develop a marketing plan: Strategize how you will promote your business and reach new customers.\n6. Set milestones: Establish short-term and long-term goals and devise a plan to measure progress.",
+    "metadata": {
+        "source": "unified_chip2"
+    }
+}
+<human>: What are some tips for creating a successful business plan?\n<bot>: \n1. Research your target market: Understand who you are selling to, how much competition there is, and the current trends.\n2. Determine your business model and strategies: Decide what products and services you will offer, and how you will compete in the market.\n3. Outline your financial projections: Estimate start-up costs, revenue projections, and operating costs.\n4. Analyze the risks: Identify potential problems and create strategies to mitigate them.\n5. Develop a marketing plan: Strategize how you will promote your business and reach new customers.\n6. Set milestones: Establish short-term and long-term goals and devise a plan to measure progress.
+User QueryBot ResponseSourceDescribe the location where you find yourself in a serene scene inside of a medieval inn with a rice paper screen.Sturdy rectory tables and low benches offer a quiet place to eat and drink food brought with you or bought from the nearby bakery. At the back of the room, the door leading to the kitchen and the owner’s private quarters is half-hidden by a rice paper screen.unified_chip2I am interested in gaining an understanding of the banking industry. What topics should I research?Some topics you could research on the banking industry include: Types of banking services and products, Regulatory and compliance requirements, Banking technology and innovations, The current landscape of banking customers, Market trends and predictions, Economic implications of banking, Legislative developments, International banking, Risk management strategies, Customer service and customer experience, Current news and reports on the banking industry.unified_chip2I want to find out more about a certain type of bird.That sounds like a great idea. What kind of bird are you interested in?unified_chip2Round number to nearest integerHere is some code to round number 4.0005 up to 3 decimal places round(4.0005, 3) #Warning: this code generation is experimental. Please inspect the code for any bugs before executing.unified_chip2
+Testing 
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+tokenizer = AutoTokenizer.from_pretrained("praison/mistral-7b-oig-unsloth-merged")
+model = AutoModelForCausalLM.from_pretrained("praison/mistral-7b-oig-unsloth-merged").to("cuda:0")
+def generate_text(text):
+    inputs = tokenizer(text, return_tensors="pt").to("cuda:0")
+    outputs = model.generate(**inputs, max_new_tokens=20)
+    print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+print("Before training\n")
+generate_text("What are the tips for a successful business plan?")
+Training Output
+(unsloth) ➜  unsloth python app.py 
+==((====))==  Unsloth: Fast Mistral patching release 2024.2
+   \\   /|    GPU: NVIDIA RTX A6000. Max memory: 47.536 GB. Platform = Linux.
+O^O/ \_/ \    Pytorch: 2.1.0+cu121. CUDA = 8.6. CUDA Toolkit = 12.1.
+\        /    Bfloat16 = TRUE. Xformers = 0.0.22.post7. FA = False.
+ "-____-"     Free Apache license: http://github.com/unslothai/unsloth
+/home/Ubuntu/miniconda3/envs/unsloth/lib/python3.11/site-packages/transformers/quantizers/auto.py:155: UserWarning: You passed `quantization_config` or equivalent parameters to `from_pretrained` but the model you're loading already has a `quantization_config` attribute. The `quantization_config` from the model will be used.
+  warnings.warn(warning_msg)
+Before training
+
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+What are the tips for a successful business plan?
+
+A business plan is a document that outlines the goals and objectives of a business, as well as the strategies and tactics that will be used to achieve those goals. A successful business plan should be well-researched, realistic,
+Unsloth 2024.2 patched 32 layers with 32 QKV layers, 32 O layers and 32 MLP layers.
+==((====))==  Unsloth - 2x faster free finetuning | Num GPUs = 1
+   \\   /|    Num examples = 210,289 | Num Epochs = 1
+O^O/ \_/ \    Batch size per device = 2 | Gradient Accumulation steps = 4
+\        /    Total batch size = 8 | Total steps = 60
+ "-____-"     Number of trainable parameters = 41,943,040
+{'loss': 2.1981, 'grad_norm': 2.061213493347168, 'learning_rate': 5e-06, 'epoch': 0.0}           
+{'loss': 1.8365, 'grad_norm': 2.0588791370391846, 'learning_rate': 1e-05, 'epoch': 0.0}          
+{'loss': 2.2138, 'grad_norm': 2.3368618488311768, 'learning_rate': 1.5e-05, 'epoch': 0.0}        
+{'loss': 1.8658, 'grad_norm': 3.463230609893799, 'learning_rate': 2e-05, 'epoch': 0.0}           
+{'loss': 2.2079, 'grad_norm': 3.7196760177612305, 'learning_rate': 2.5e-05, 'epoch': 0.0}        
+{'loss': 2.0785, 'grad_norm': 2.8596503734588623, 'learning_rate': 3e-05, 'epoch': 0.0}          
+{'loss': 2.1417, 'grad_norm': 1.244269609451294, 'learning_rate': 3.5e-05, 'epoch': 0.0}         
+{'loss': 1.5724, 'grad_norm': 1.3960254192352295, 'learning_rate': 4e-05, 'epoch': 0.0}          
+{'loss': 1.5514, 'grad_norm': 1.5619240999221802, 'learning_rate': 4.5e-05, 'epoch': 0.0}        
+{'loss': 1.3572, 'grad_norm': 1.2569844722747803, 'learning_rate': 5e-05, 'epoch': 0.0}          
+{'loss': 2.1004, 'grad_norm': 1.2735906839370728, 'learning_rate': 4.9e-05, 'epoch': 0.0}        
+{'loss': 1.5433, 'grad_norm': 1.523201823234558, 'learning_rate': 4.8e-05, 'epoch': 0.0}         
+{'loss': 1.3482, 'grad_norm': 1.4724408388137817, 'learning_rate': 4.7e-05, 'epoch': 0.0}        
+{'loss': 1.5466, 'grad_norm': 1.2219419479370117, 'learning_rate': 4.600000000000001e-05, 'epoch': 0.0}
+{'loss': 1.3558, 'grad_norm': 1.5051283836364746, 'learning_rate': 4.5e-05, 'epoch': 0.0}        
+{'loss': 1.4243, 'grad_norm': 1.4279958009719849, 'learning_rate': 4.4000000000000006e-05, 'epoch': 0.0}
+{'loss': 1.3032, 'grad_norm': 1.3955613374710083, 'learning_rate': 4.3e-05, 'epoch': 0.0}        
+{'loss': 1.489, 'grad_norm': 1.3137612342834473, 'learning_rate': 4.2e-05, 'epoch': 0.0}         
+{'loss': 1.6274, 'grad_norm': 1.1266759634017944, 'learning_rate': 4.1e-05, 'epoch': 0.0}        
+{'loss': 1.4537, 'grad_norm': 1.429093360900879, 'learning_rate': 4e-05, 'epoch': 0.0}           
+{'loss': 1.4197, 'grad_norm': 1.4981167316436768, 'learning_rate': 3.9000000000000006e-05, 'epoch': 0.0}
+{'loss': 1.6334, 'grad_norm': 1.2677443027496338, 'learning_rate': 3.8e-05, 'epoch': 0.0}        
+{'loss': 1.448, 'grad_norm': 1.1985961198806763, 'learning_rate': 3.7e-05, 'epoch': 0.0}         
+{'loss': 1.3151, 'grad_norm': 1.1868153810501099, 'learning_rate': 3.6e-05, 'epoch': 0.0}        
+{'loss': 1.1273, 'grad_norm': 1.3043361902236938, 'learning_rate': 3.5e-05, 'epoch': 0.0}        
+{'loss': 1.2307, 'grad_norm': 1.041940689086914, 'learning_rate': 3.4000000000000007e-05, 'epoch': 0.0}
+{'loss': 1.3271, 'grad_norm': 1.2183479070663452, 'learning_rate': 3.3e-05, 'epoch': 0.0}        
+{'loss': 1.8804, 'grad_norm': 1.5357784032821655, 'learning_rate': 3.2000000000000005e-05, 'epoch': 0.0}
+{'loss': 1.3168, 'grad_norm': 1.4776008129119873, 'learning_rate': 3.1e-05, 'epoch': 0.0}        
+{'loss': 1.0982, 'grad_norm': 1.133951187133789, 'learning_rate': 3e-05, 'epoch': 0.0}           
+{'loss': 1.5025, 'grad_norm': 1.2566990852355957, 'learning_rate': 2.9e-05, 'epoch': 0.0}        
+{'loss': 1.2276, 'grad_norm': 1.0894614458084106, 'learning_rate': 2.8000000000000003e-05, 'epoch': 0.0}
+{'loss': 1.1036, 'grad_norm': 1.1274800300598145, 'learning_rate': 2.7000000000000002e-05, 'epoch': 0.0}
+{'loss': 1.6558, 'grad_norm': 1.1313380002975464, 'learning_rate': 2.6000000000000002e-05, 'epoch': 0.0}
+{'loss': 1.735, 'grad_norm': 1.1106340885162354, 'learning_rate': 2.5e-05, 'epoch': 0.0}         
+{'loss': 1.0835, 'grad_norm': 1.1308552026748657, 'learning_rate': 2.4e-05, 'epoch': 0.0}        
+{'loss': 1.1526, 'grad_norm': 0.9274650812149048, 'learning_rate': 2.3000000000000003e-05, 'epoch': 0.0}
+{'loss': 1.1213, 'grad_norm': 1.2211635112762451, 'learning_rate': 2.2000000000000003e-05, 'epoch': 0.0}
+{'loss': 1.5952, 'grad_norm': 1.356343150138855, 'learning_rate': 2.1e-05, 'epoch': 0.0}         
+{'loss': 1.6124, 'grad_norm': 1.2603596448898315, 'learning_rate': 2e-05, 'epoch': 0.0}          
+{'loss': 1.0909, 'grad_norm': 1.2803326845169067, 'learning_rate': 1.9e-05, 'epoch': 0.0}        
+{'loss': 1.5938, 'grad_norm': 1.154482126235962, 'learning_rate': 1.8e-05, 'epoch': 0.0}         
+{'loss': 1.4454, 'grad_norm': 1.3015155792236328, 'learning_rate': 1.7000000000000003e-05, 'epoch': 0.0}
+{'loss': 1.1853, 'grad_norm': 1.379291296005249, 'learning_rate': 1.6000000000000003e-05, 'epoch': 0.0}
+{'loss': 1.1789, 'grad_norm': 1.1227800846099854, 'learning_rate': 1.5e-05, 'epoch': 0.0}        
+{'loss': 1.6944, 'grad_norm': 1.279732346534729, 'learning_rate': 1.4000000000000001e-05, 'epoch': 0.0}
+{'loss': 1.2302, 'grad_norm': 1.1194822788238525, 'learning_rate': 1.3000000000000001e-05, 'epoch': 0.0}
+{'loss': 1.3281, 'grad_norm': 1.0212090015411377, 'learning_rate': 1.2e-05, 'epoch': 0.0}        
+{'loss': 1.3042, 'grad_norm': 1.0060207843780518, 'learning_rate': 1.1000000000000001e-05, 'epoch': 0.0}
+{'loss': 1.4121, 'grad_norm': 1.0177292823791504, 'learning_rate': 1e-05, 'epoch': 0.0}          
+{'loss': 1.513, 'grad_norm': 1.0106987953186035, 'learning_rate': 9e-06, 'epoch': 0.0}           
+{'loss': 1.5553, 'grad_norm': 1.029133915901184, 'learning_rate': 8.000000000000001e-06, 'epoch': 0.0}
+{'loss': 1.3623, 'grad_norm': 1.0691938400268555, 'learning_rate': 7.000000000000001e-06, 'epoch': 0.0}
+{'loss': 1.4533, 'grad_norm': 1.1606323719024658, 'learning_rate': 6e-06, 'epoch': 0.0}          
+{'loss': 1.3618, 'grad_norm': 1.1049084663391113, 'learning_rate': 5e-06, 'epoch': 0.0}          
+{'loss': 1.2301, 'grad_norm': 3.874545097351074, 'learning_rate': 4.000000000000001e-06, 'epoch': 0.0}
+{'loss': 1.4069, 'grad_norm': 1.2364044189453125, 'learning_rate': 3e-06, 'epoch': 0.0}          
+{'loss': 1.2702, 'grad_norm': 1.211297869682312, 'learning_rate': 2.0000000000000003e-06, 'epoch': 0.0}
+{'loss': 1.0513, 'grad_norm': 1.0858958959579468, 'learning_rate': 1.0000000000000002e-06, 'epoch': 0.0}
+{'loss': 1.3294, 'grad_norm': 1.4024900197982788, 'learning_rate': 0.0, 'epoch': 0.0}            
+{'train_runtime': 130.1719, 'train_samples_per_second': 3.687, 'train_steps_per_second': 0.461, 'train_loss': 1.4799718677997589, 'epoch': 0.0}
+100%|████████████████████████████████████████████████████████████| 60/60 [02:10<00:00,  2.17s/it]
+
+ ######## 
+After training
+
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+What are the tips for a successful business plan?
+
+1. Know your business.
+2. Know your market.
+3. Know your competition.
+4. Know your customers.
+5. Know your finances.
+6. Know your team.
+7. Know your goals
+Conda Installation
+conda create -n unsloth python=3.10 -y
+conda activate unsloth
+conda install pytorch cudatoolkit torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+
+conda install xformers -c xformers
+
+pip install bitsandbytes
+
+pip install "unsloth[conda] @ git+https://github.com/unslothai/unsloth.git"
+
+
+
+
+
+
+
+
+
+
+
+
+					Categories				
+
+Finetuning 
+
+MLX Mistral Lora Fine Tuning
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 26, 2024
+
+
+
+
+
+
+
+
+conda create -n mlx python=3.11
+conda activate mlx
+git clone https://github.com/ml-explore/mlx-examples
+cd mlx-examples/lora
+pip install -r requirements.txt
+sudo xcodebuild -license # Might need this
+Before Training
+python -m mlx_lm.generate \
+  --model mistralai/Mistral-7B-v0.1 \
+  --prompt "table: 1-10015132-16\
+columns: Player, No., Nationality, Position, Years in Toronto, School/Club Team\
+Q: What is Terrence Ross' nationality\
+A: "
+❯ python -m mlx_lm.generate \
+  --model mistralai/Mistral-7B-v0.1 \
+  --prompt "table: 1-10015132-16\
+columns: Player, No., Nationality, Position, Years in Toronto, School/Club Team\
+Q: What is Terrence Ross' nationality\
+A: "
+None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Fetching 10 files: 100%|███████████████████████| 10/10 [00:00<00:00, 104077.02it/s]
+==========
+Prompt: table: 1-10015132-16columns: Player, No., Nationality, Position, Years in Toronto, School/Club TeamQ: What is Terrence Ross' nationalityA: 
+1-10015132-16.
+
+A: 1-10015132-16.
+
+The 2017 NBA season is officially underway and the Toronto Raptors have a new look.
+
+The Raptors are the first team in the league to start the season with a new coach, and they have a new roster that includes many of their young stars.
+
+The team is
+==========
+Prompt: 49.228 tokens-per-sec
+Generation: 18.635 tokens-per-sec
+Start
+python convert.py --hf-path mistralai/Mistral-7B-v0.1 -q
+python lora.py \
+   --model mistralai/Mistral-7B-v0.1 \
+   --train \
+   --batch-size 1 \
+   --lora-layers 4
+Output
+❯ python lora.py \
+   --model mistralai/Mistral-7B-v0.1 \
+   --train \
+   --batch-size 1 \
+   --lora-layers 4
+None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Loading pretrained model
+Fetching 10 files: 100%|█████████████████████| 10/10 [00:00<00:00, 116185.71it/s]
+Total parameters 7242.158M
+Trainable parameters 0.426M
+Loading datasets
+Training
+Iter 1: Val loss 2.221, Val took 11.718s
+Iter 10: Train loss 2.334, It/sec 3.322, Tokens/sec 286.360
+Iter 20: Train loss 1.873, It/sec 2.770, Tokens/sec 274.466
+Iter 30: Train loss 1.573, It/sec 2.647, Tokens/sec 279.473
+Iter 40: Train loss 1.703, It/sec 2.748, Tokens/sec 285.533
+Iter 50: Train loss 1.393, It/sec 2.781, Tokens/sec 274.453
+Iter 60: Train loss 1.375, It/sec 2.902, Tokens/sec 264.991
+Iter 70: Train loss 1.449, It/sec 2.692, Tokens/sec 286.195
+Iter 80: Train loss 1.265, It/sec 2.734, Tokens/sec 278.347
+Iter 90: Train loss 1.345, It/sec 2.571, Tokens/sec 282.565
+Iter 100: Train loss 1.421, It/sec 2.911, Tokens/sec 276.826
+Iter 100: Saved adapter weights to adapters.npz.
+Iter 110: Train loss 1.449, It/sec 2.646, Tokens/sec 286.860
+Iter 120: Train loss 1.196, It/sec 2.876, Tokens/sec 261.705
+Iter 130: Train loss 1.425, It/sec 2.902, Tokens/sec 272.768
+Iter 140: Train loss 1.262, It/sec 2.717, Tokens/sec 284.971
+Iter 150: Train loss 1.384, It/sec 2.963, Tokens/sec 268.186
+Iter 160: Train loss 1.174, It/sec 2.953, Tokens/sec 269.627
+Iter 170: Train loss 1.229, It/sec 2.889, Tokens/sec 276.725
+Iter 180: Train loss 1.219, It/sec 2.913, Tokens/sec 275.278
+Iter 190: Train loss 1.229, It/sec 2.699, Tokens/sec 270.176
+Iter 200: Train loss 1.284, It/sec 2.855, Tokens/sec 286.337
+Iter 200: Val loss 1.292, Val took 7.806s
+Iter 200: Saved adapter weights to adapters.npz.
+Iter 210: Train loss 1.109, It/sec 2.723, Tokens/sec 266.358
+Iter 220: Train loss 1.269, It/sec 2.990, Tokens/sec 270.314
+Iter 230: Train loss 1.085, It/sec 2.768, Tokens/sec 280.997
+Iter 240: Train loss 1.207, It/sec 2.844, Tokens/sec 282.448
+Iter 250: Train loss 1.300, It/sec 2.783, Tokens/sec 271.608
+Iter 260: Train loss 1.196, It/sec 2.847, Tokens/sec 271.075
+Iter 270: Train loss 1.135, It/sec 2.826, Tokens/sec 278.911
+Iter 280: Train loss 1.218, It/sec 2.659, Tokens/sec 283.933
+Iter 290: Train loss 1.338, It/sec 2.807, Tokens/sec 273.134
+Iter 300: Train loss 1.377, It/sec 2.696, Tokens/sec 276.655
+Iter 300: Saved adapter weights to adapters.npz.
+Iter 310: Train loss 1.145, It/sec 2.870, Tokens/sec 279.554
+Iter 320: Train loss 1.111, It/sec 2.819, Tokens/sec 273.174
+Iter 330: Train loss 1.214, It/sec 2.958, Tokens/sec 264.441
+Iter 340: Train loss 1.103, It/sec 2.807, Tokens/sec 275.336
+Iter 350: Train loss 1.258, It/sec 2.981, Tokens/sec 269.784
+Iter 360: Train loss 1.243, It/sec 2.943, Tokens/sec 276.900
+Iter 370: Train loss 1.342, It/sec 2.866, Tokens/sec 274.552
+Iter 380: Train loss 1.211, It/sec 2.954, Tokens/sec 256.437
+Iter 390: Train loss 1.158, It/sec 2.819, Tokens/sec 277.123
+Iter 400: Train loss 1.417, It/sec 2.934, Tokens/sec 273.135
+Iter 400: Val loss 1.200, Val took 7.811s
+Iter 400: Saved adapter weights to adapters.npz.
+Iter 410: Train loss 1.139, It/sec 2.899, Tokens/sec 275.708
+Iter 420: Train loss 1.198, It/sec 2.877, Tokens/sec 283.715
+Iter 430: Train loss 1.192, It/sec 2.947, Tokens/sec 277.650
+Iter 440: Train loss 1.139, It/sec 2.908, Tokens/sec 267.272
+Iter 450: Train loss 1.175, It/sec 2.916, Tokens/sec 275.825
+Iter 460: Train loss 1.175, It/sec 2.853, Tokens/sec 263.292
+Iter 470: Train loss 1.102, It/sec 2.804, Tokens/sec 287.652
+Iter 480: Train loss 1.223, It/sec 2.832, Tokens/sec 266.216
+Iter 490: Train loss 1.216, It/sec 2.932, Tokens/sec 277.677
+Iter 500: Train loss 1.155, It/sec 2.933, Tokens/sec 259.287
+Iter 500: Saved adapter weights to adapters.npz.
+Iter 510: Train loss 1.076, It/sec 2.581, Tokens/sec 288.584
+Iter 520: Train loss 1.242, It/sec 2.916, Tokens/sec 273.273
+Iter 530: Train loss 1.235, It/sec 2.988, Tokens/sec 256.984
+Iter 540: Train loss 1.163, It/sec 2.747, Tokens/sec 287.904
+Iter 550: Train loss 1.016, It/sec 2.875, Tokens/sec 271.945
+Iter 560: Train loss 1.251, It/sec 2.786, Tokens/sec 271.120
+Iter 570: Train loss 1.191, It/sec 2.679, Tokens/sec 274.885
+Iter 580: Train loss 1.084, It/sec 2.670, Tokens/sec 284.844
+Iter 590: Train loss 1.300, It/sec 2.947, Tokens/sec 271.684
+Iter 600: Train loss 1.054, It/sec 2.740, Tokens/sec 270.413
+Iter 600: Val loss 1.195, Val took 7.820s
+Iter 600: Saved adapter weights to adapters.npz.
+Iter 610: Train loss 1.196, It/sec 2.938, Tokens/sec 267.913
+Iter 620: Train loss 1.094, It/sec 2.695, Tokens/sec 282.966
+Iter 630: Train loss 1.027, It/sec 2.783, Tokens/sec 278.813
+Iter 640: Train loss 1.151, It/sec 2.981, Tokens/sec 266.495
+Iter 650: Train loss 1.103, It/sec 2.923, Tokens/sec 277.105
+Iter 660: Train loss 1.364, It/sec 2.599, Tokens/sec 287.734
+Iter 670: Train loss 1.030, It/sec 2.889, Tokens/sec 281.123
+Iter 680: Train loss 1.053, It/sec 2.724, Tokens/sec 278.404
+Iter 690: Train loss 1.187, It/sec 3.049, Tokens/sec 261.587
+Iter 700: Train loss 1.159, It/sec 2.826, Tokens/sec 250.098
+Iter 700: Saved adapter weights to adapters.npz.
+Iter 710: Train loss 1.062, It/sec 3.083, Tokens/sec 262.698
+Iter 720: Train loss 1.057, It/sec 2.816, Tokens/sec 272.624
+Iter 730: Train loss 1.226, It/sec 2.860, Tokens/sec 282.319
+Iter 740: Train loss 1.109, It/sec 2.779, Tokens/sec 279.848
+Iter 750: Train loss 1.070, It/sec 2.910, Tokens/sec 285.427
+Iter 760: Train loss 1.175, It/sec 2.860, Tokens/sec 274.605
+Iter 770: Train loss 1.226, It/sec 3.002, Tokens/sec 258.464
+Iter 780: Train loss 1.233, It/sec 2.780, Tokens/sec 289.426
+Iter 790: Train loss 1.052, It/sec 2.844, Tokens/sec 275.832
+Iter 800: Train loss 1.295, It/sec 3.048, Tokens/sec 263.663
+Iter 800: Val loss 1.162, Val took 7.848s
+Iter 800: Saved adapter weights to adapters.npz.
+Iter 810: Train loss 1.055, It/sec 2.858, Tokens/sec 274.326
+Iter 820: Train loss 1.172, It/sec 2.893, Tokens/sec 266.757
+Iter 830: Train loss 1.254, It/sec 2.968, Tokens/sec 268.894
+Iter 840: Train loss 1.155, It/sec 2.940, Tokens/sec 278.168
+Iter 850: Train loss 1.128, It/sec 2.870, Tokens/sec 278.114
+Iter 860: Train loss 1.255, It/sec 2.912, Tokens/sec 272.808
+Iter 870: Train loss 0.946, It/sec 2.934, Tokens/sec 274.010
+Iter 880: Train loss 1.118, It/sec 2.780, Tokens/sec 299.120
+Iter 890: Train loss 1.071, It/sec 2.827, Tokens/sec 274.527
+Iter 900: Train loss 1.147, It/sec 2.840, Tokens/sec 269.510
+Iter 900: Saved adapter weights to adapters.npz.
+Iter 910: Train loss 1.162, It/sec 2.872, Tokens/sec 281.153
+Iter 920: Train loss 0.970, It/sec 2.959, Tokens/sec 273.132
+Iter 930: Train loss 0.969, It/sec 2.697, Tokens/sec 274.783
+Iter 940: Train loss 0.988, It/sec 2.961, Tokens/sec 256.083
+Iter 950: Train loss 1.265, It/sec 3.013, Tokens/sec 263.038
+Iter 960: Train loss 1.035, It/sec 2.769, Tokens/sec 279.117
+Iter 970: Train loss 0.960, It/sec 2.659, Tokens/sec 289.589
+Iter 980: Train loss 1.051, It/sec 2.950, Tokens/sec 271.972
+Iter 990: Train loss 1.057, It/sec 2.815, Tokens/sec 270.284
+Iter 1000: Train loss 1.247, It/sec 2.662, Tokens/sec 294.397
+Iter 1000: Val loss 1.151, Val took 7.824s
+Iter 1000: Saved adapter weights to adapters.npz.
+Data Structure
+Analysing Each row
+train.jsonl example
+{"text": "table: 1-1000181-1\ncolumns: State/territory, Text/background colour, Format, Current slogan, Current series, Notes\nQ: Tell me what the notes are for South Australia \nA: SELECT Notes FROM 1-1000181-1 WHERE Current slogan = 'SOUTH AUSTRALIA'"}
+{"text": "table: 1-1000181-1\ncolumns: State/territory, Text/background colour, Format, Current slogan, Current series, Notes\nQ: What is the current series where the new series began in June 2011?\nA: SELECT Current series FROM 1-1000181-1 WHERE Notes = 'New series began in June 2011'"}
+{"text": "table: 1-1000181-1\ncolumns: State/territory, Text/background colour, Format, Current slogan, Current series, Notes\nQ: What is the format for South Australia?\nA: SELECT Format FROM 1-1000181-1 WHERE State/territory = 'South Australia'"}
+Understanding Above, Analysing each row. 
+{
+    "text": "table: 1-1000181-1\ncolumns: State/territory, Text/background colour, Format, Current slogan, Current series, Notes\nQ: Tell me what the notes are for South Australia \nA: SELECT Notes FROM 1-1000181-1 WHERE Current slogan = 'SOUTH AUSTRALIA'"
+}
+table: 1-1000181-1
+columns: State/territory, Text/background colour, Format, Current slogan, Current series, Notes
+Q: Tell me what the notes are for South Australia
+A: SELECT Notes FROM 1-1000181-1 WHERE Current slogan = 'SOUTH AUSTRALIA'
+Evaluate
+python lora.py --model mistralai/Mistral-7B-v0.1 \
+               --adapter-file ./adapters.npz \
+               --test
+Output
+❯ python lora.py --model mistralai/Mistral-7B-v0.1 \
+               --adapter-file ./adapters.npz \
+               --test
+
+None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Loading pretrained model
+Fetching 10 files: 100%|███████████████████████| 10/10 [00:00<00:00, 146653.99it/s]
+Total parameters 7243.436M
+Trainable parameters 1.704M
+Loading datasets
+Testing
+Test loss 1.548, Test ppl 4.704.
+Generate
+python lora.py --model mistralai/Mistral-7B-v0.1 \
+               --adapter-file adapters.npz \
+               --max-tokens 50 \
+               --prompt "table: 1-10015132-16
+columns: Player, No., Nationality, Position, Years in Toronto, School/Club Team
+Q: What is Terrence Ross' nationality
+A: "
+Output
+❯ python lora.py --model mistralai/Mistral-7B-v0.1 \
+               --adapter-file adapters.npz \
+               --max-tokens 50 \
+               --prompt "table: 1-10015132-16
+columns: Player, No., Nationality, Position, Years in Toronto, School/Club Team
+Q: What is Terrence Ross' nationality
+A: "
+
+None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Loading pretrained model
+Fetching 10 files: 100%|███████████████████████| 10/10 [00:00<00:00, 140748.46it/s]
+Total parameters 7243.436M
+Trainable parameters 1.704M
+Loading datasets
+Generating
+table: 1-10015132-16
+columns: Player, No., Nationality, Position, Years in Toronto, School/Club Team
+Q: What is Terrence Ross' nationality
+A: SELECT Nationality FROM 1-10015132-16 WHERE Position = 'G' AND No. = '31' AND School/Club Team = 'Windsor (CIS)' AND Years
+Upload
+Fuse (Optional)
+Merge both base model and fine tuned adapter. Production Ready.
+python fuse.py \
+  --upload-name praison/wikisql-4bit-1k \
+  --hf-path mistralai/Mistral-7B-v0.1 \
+  --adapter-file adapters.npz \
+  --model mistralai/Mistral-7B-v0.1
+Default Upload (without Fuse)
+Note: This will keep the adapter separate from the base model. Development and Testing Ready version. 
+python -m mlx_lm.convert \
+    --hf-path mistralai/Mistral-7B-v0.1 \
+    -q \
+    --q-bits 4 \
+    --upload-repo praison/wikisql-4bit-1k
+https://huggingface.co/praison/wikisql-4bit-1k
+
+
+
+
+
+
+
+
+
+
+
+
+					Categories				
+
+Finetuning 
+
+Gemma Fine Tuning With Transformers
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 25, 2024
+
+
+
+
+
+
+
+
+conda create -n gemma python=3.11
+conda activate gemma
+pip install -U bitsandbytes==0.42.0 peft==0.8.2 trl==0.7.10 accelerate==0.27.1 datasets==2.17.0 transformers==4.38.0
+export HF_TOKEN=xxxxxxxxxxxx
+import os
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, GemmaTokenizer, TrainingArguments
+from peft import LoraConfig
+from datasets import load_dataset
+from trl import SFTTrainer
+
+# 1. Configuration
+model_id = "google/gemma-7b"
+bnb_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16)
+tokenizer = AutoTokenizer.from_pretrained(model_id, token=os.environ['HF_TOKEN'])
+lora_config = LoraConfig(r=8, target_modules=["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"], task_type="CAUSAL_LM")
+model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map={"":0}, token=os.environ['HF_TOKEN'])
+
+# 2. Dataset loading and mapping
+data = load_dataset("Abirate/english_quotes")
+data = data.map(lambda samples: tokenizer(samples["quote"]), batched=True)
+
+# 3 Before training
+def generate_text(text):
+    inputs = tokenizer(text, return_tensors="pt").to("cuda:0")
+    outputs = model.generate(**inputs, max_new_tokens=20)
+    print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+print("Before training\n")
+generate_text("Quote: Imagination is more")
+
+# 4. After training
+trainer = SFTTrainer(
+    model=model, 
+    train_dataset=data["train"],
+    max_seq_length = 1024,
+    args=TrainingArguments(
+        per_device_train_batch_size=1, 
+        gradient_accumulation_steps=4, 
+        warmup_steps=2, 
+        max_steps=10, 
+        learning_rate=2e-4, 
+        fp16=True, 
+        logging_steps=1, 
+        output_dir="outputs", 
+        optim="paged_adamw_8bit"
+    ), 
+    peft_config=lora_config, 
+    formatting_func=lambda example: [f"Quote: {example['quote'][0]}\nAuthor: {example['author'][0]}"]
+)
+trainer.train()
+print("\n ######## \nAfter training\n")
+generate_text("Quote: Imagination is")
+model.save_pretrained("outputs")
+Output
+➜  gemma python app.py
+Loading checkpoint shards: 100%|███████████████████████████████████| 4/4 [00:10<00:00,  2.56s/it]
+Before training
+
+Quote: Imagination is more important than knowledge.
+
+
+{'loss': 1.3728, 'grad_norm': 3.607649564743042, 'learning_rate': 0.0001, 'epoch': 1.0}          
+{'loss': 0.4885, 'grad_norm': 1.6498007774353027, 'learning_rate': 0.0002, 'epoch': 1.33}        
+{'loss': 0.6891, 'grad_norm': 2.1408584117889404, 'learning_rate': 0.000175, 'epoch': 2.0}       
+{'loss': 0.4725, 'grad_norm': 1.8040838241577148, 'learning_rate': 0.00015000000000000001, 'epoch': 2.67}
+{'loss': 0.2499, 'grad_norm': 0.9579542279243469, 'learning_rate': 0.000125, 'epoch': 3.0}       
+{'loss': 0.5559, 'grad_norm': 1.2753405570983887, 'learning_rate': 0.0001, 'epoch': 4.0}         
+{'loss': 0.4877, 'grad_norm': 1.1377466917037964, 'learning_rate': 7.500000000000001e-05, 'epoch': 5.0}
+{'loss': 0.1506, 'grad_norm': 0.6022409200668335, 'learning_rate': 5e-05, 'epoch': 5.33}         
+{'loss': 0.3661, 'grad_norm': 3.5513436794281006, 'learning_rate': 2.5e-05, 'epoch': 6.0}        
+{'loss': 0.3387, 'grad_norm': 1.9127172231674194, 'learning_rate': 0.0, 'epoch': 6.67}           
+{'train_runtime': 9.5668, 'train_samples_per_second': 4.181, 'train_steps_per_second': 1.045, 'train_loss': 0.5171777591109276, 'epoch': 6.67}
+100%|████████████████████████████████████████████████████████████| 10/10 [00:09<00:00,  1.05it/s]
+
+ ######## 
+After training
+
+Quote: Imagination is more important than knowledge.
+Author: Albert Einstein
+From: The World as I See It
+Model Info
+GemmaForCausalLM(
+  (model): GemmaModel(
+    (embed_tokens): Embedding(256000, 3072, padding_idx=0)
+    (layers): ModuleList(
+      (0-27): 28 x GemmaDecoderLayer(
+        (self_attn): GemmaSdpaAttention(
+          (q_proj): Linear4bit(in_features=3072, out_features=4096, bias=False)
+          (k_proj): Linear4bit(in_features=3072, out_features=4096, bias=False)
+          (v_proj): Linear4bit(in_features=3072, out_features=4096, bias=False)
+          (o_proj): Linear4bit(in_features=4096, out_features=3072, bias=False)
+          (rotary_emb): GemmaRotaryEmbedding()
+        )
+        (mlp): GemmaMLP(
+          (gate_proj): Linear4bit(in_features=3072, out_features=24576, bias=False)
+          (up_proj): Linear4bit(in_features=3072, out_features=24576, bias=False)
+          (down_proj): Linear4bit(in_features=24576, out_features=3072, bias=False)
+          (act_fn): GELUActivation()
+        )
+        (input_layernorm): GemmaRMSNorm()
+        (post_attention_layernorm): GemmaRMSNorm()
+      )
+    )
+    (norm): GemmaRMSNorm()
+  )
+  (lm_head): Linear(in_features=3072, out_features=256000, bias=False)
+)
+Save to HuggingFace
+huggingface-cli upload USERNAME/MY-MODELNAME outputs/
+Final Model
+https://huggingface.co/praison/gemma-4bit-english-quotes/tree/main
+# Use a pipeline as a high-level helper
+from transformers import pipeline
+
+pipe = pipeline("text-generation", model="praison/gemma-4bit-english-quotes")
+
+# Load model directly
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+tokenizer = AutoTokenizer.from_pretrained("praison/gemma-4bit-english-quotes")
+model = AutoModelForCausalLM.from_pretrained("praison/gemma-4bit-english-quotes")
+
+
+
+
+
+
+
+
+
+
+
+
+					Categories				
+
+LLM 
+
+Anthropic Claude Python API
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 23, 2024
+
+
+
+
+
+
+
+
+import anthropic
+
+client = anthropic.Anthropic(
+    # defaults to os.environ.get("ANTHROPIC_API_KEY")
+    api_key="my_api_key",
+)
+message = client.messages.create(
+    model="claude-2.1",
+    max_tokens=1000,
+    temperature=0,
+    messages=[
+        {"role": "user", "content": "What is your base Model?"}
+    ]
+)
+print(message.content)
+
+
+
+
+
+
+
+
+
+
+
+
+					Categories				
+
+Embedding 
+
+Ollama Embedding
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 23, 2024
+
+
+
+
+
+
+
+
+pip install langchain langchain-community langchain-core
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores import Chroma
+from langchain_community import embeddings
+from langchain_community.chat_models import ChatOllama
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain.output_parsers import PydanticOutputParser
+from langchain.text_splitter import CharacterTextSplitter
+
+model_local = ChatOllama(model="mistral")
+
+# 1. Split data into chunks
+urls = [
+    "https://ollama.com/",
+    "https://ollama.com/blog/windows-preview",
+    "https://ollama.com/blog/openai-compatibility",
+]
+docs = [WebBaseLoader(url).load() for url in urls]
+docs_list = [item for sublist in docs for item in sublist]
+text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=7500, chunk_overlap=100)
+doc_splits = text_splitter.split_documents(docs_list)
+
+# 2. Convert documents to Embeddings and store them
+vectorstore = Chroma.from_documents(
+    documents=doc_splits,
+    collection_name="rag-chroma",
+    embedding=embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text'),
+)
+retriever = vectorstore.as_retriever()
+
+# 3. Before RAG
+print("Before RAG\n")
+before_rag_template = "What is {topic}"
+before_rag_prompt = ChatPromptTemplate.from_template(before_rag_template)
+before_rag_chain = before_rag_prompt | model_local | StrOutputParser()
+print(before_rag_chain.invoke({"topic": "Ollama"}))
+
+# 4. After RAG
+print("\n########\nAfter RAG\n")
+after_rag_template = """Answer the question based only on the following context:
+{context}
+Question: {question}
+"""
+after_rag_prompt = ChatPromptTemplate.from_template(after_rag_template)
+after_rag_chain = (
+    {"context": retriever, "question": RunnablePassthrough()}
+    | after_rag_prompt
+    | model_local
+    | StrOutputParser()
+)
+print(after_rag_chain.invoke("What is Ollama?"))
+
+# loader = PyPDFLoader("Ollama.pdf")
+# doc_splits = loader.load_and_split()
+UI
+import gradio as gr
+from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader
+from langchain_community.vectorstores import Chroma
+from langchain_community import embeddings
+from langchain_community.chat_models import ChatOllama
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain.output_parsers import PydanticOutputParser
+from langchain.text_splitter import CharacterTextSplitter
+
+def process_input(urls, question):
+    model_local = ChatOllama(model="mistral")
+    
+    # Convert string of URLs to list
+    urls_list = urls.split("\n")
+    docs = [WebBaseLoader(url).load() for url in urls_list]
+    docs_list = [item for sublist in docs for item in sublist]
+    
+    text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=7500, chunk_overlap=100)
+    doc_splits = text_splitter.split_documents(docs_list)
+
+    vectorstore = Chroma.from_documents(
+        documents=doc_splits,
+        collection_name="rag-chroma",
+        embedding=embeddings.ollama.OllamaEmbeddings(model='nomic-embed-text'),
+    )
+    retriever = vectorstore.as_retriever()
+
+    after_rag_template = """Answer the question based only on the following context:
+    {context}
+    Question: {question}
+    """
+    after_rag_prompt = ChatPromptTemplate.from_template(after_rag_template)
+    after_rag_chain = (
+        {"context": retriever, "question": RunnablePassthrough()}
+        | after_rag_prompt
+        | model_local
+        | StrOutputParser()
+    )
+    return after_rag_chain.invoke(question)
+
+# Define Gradio interface
+iface = gr.Interface(fn=process_input,
+                     inputs=[gr.Textbox(label="Enter URLs separated by new lines"), gr.Textbox(label="Question")],
+                     outputs="text",
+                     title="Document Query with Ollama",
+                     description="Enter URLs and a question to query the documents.")
+iface.launch()
+
+
+
+
+
+
+
+
+
+
+
+
+
+					Categories				
+
+Finetuning 
+
+Google Gemma Fine-Tuning
+
+
+
+
+
+								Post author							
+ 
+
+							By praison 
+
+
+
+
+								Post date							
+ 
+
+February 21, 2024
+
+
+
+
+
+
+
+
+pip install "tensorflow[and-cuda]"
+pip install -U keras-nlp
+pip install -U keras
+pip install tensorrt
+pip install huggingface_hub # Optional if you want to push to Hugging Face
+huggingface-cli login # Optional
+wget -O databricks-dolly-15k.jsonl https://huggingface.co/datasets/databricks/databricks-dolly-15k/resolve/main/databricks-dolly-15k.jsonl
+import os
+import json
+import keras
+import keras_nlp
+
+os.environ["KAGGLE_USERNAME"] = os.environ["KAGGLE_USERNAME"]
+os.environ["KAGGLE_KEY"] = os.environ["KAGGLE_KEY"]
+
+os.environ["KERAS_BACKEND"] = "torch"
+os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "1.00"
+
+data = []
+with open("databricks-dolly-15k.jsonl") as file:
+    for line in file:
+        features = json.loads(line)
+        if features["context"]:
+            continue
+        template = "Instruction:\n{instruction}\n\nResponse:\n{response}"
+        data.append(template.format(**features))
+
+data = data[:1000]
+
+gemma_lm = keras_nlp.models.GemmaCausalLM.from_preset("gemma_2b_en")
+gemma_lm.summary()
+
+print("Before fine-tuning:\n\n")
+
+prompt = template.format(
+    instruction="What should I do on a trip to Europe?",
+    response="",
+)
+print(gemma_lm.generate(prompt, max_length=256))
+
+prompt = template.format(
+    instruction="Explain the process of photosynthesis in a way that a child could understand.",
+    response="",
+)
+print(gemma_lm.generate(prompt, max_length=256))
+
+gemma_lm.backbone.enable_lora(rank=4)
+gemma_lm.summary()
+
+gemma_lm.preprocessor.sequence_length = 512
+optimizer = keras.optimizers.AdamW(
+    learning_rate=5e-5,
+    weight_decay=0.01,
+)
+optimizer.exclude_from_weight_decay(var_names=["bias", "scale"])
+
+gemma_lm.compile(
+    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    optimizer=optimizer,
+    weighted_metrics=[keras.metrics.SparseCategoricalAccuracy()],
+)
+gemma_lm.fit(data, epochs=1, batch_size=1)
+
+gemma_lm.save('finetuned_model.keras')
+
+print("After fine-tuning:\n")
+
+prompt = template.format(
+    instruction="What should I do on a trip to Europe?",
+    response="",
+)
+print(gemma_lm.generate(prompt, max_length=256))
+
+prompt = template.format(
+    instruction="Explain the process of photosynthesis in a way that a child could understand.",
+    response="",
+)
+print(gemma_lm.generate(prompt, max_length=256))
+Below Code need Fixing
+import os
+import json
+import keras
+import keras_nlp
+
+os.environ["KAGGLE_USERNAME"] = os.environ["KAGGLE_USERNAME"]
+os.environ["KAGGLE_KEY"] = os.environ["KAGGLE_KEY"]
+
+os.environ["KERAS_BACKEND"] = "torch"
+os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "1.00"
+
+data = []
+with open("databricks-dolly-15k.jsonl") as file:
+    for line in file:
+        features = json.loads(line)
+        if features["context"]:
+            continue
+        template = "Instruction:\n{instruction}\n\nResponse:\n{response}"
+        data.append(template.format(**features))
+
+data = data[:1000]
+
+gemma_lm = keras_nlp.models.GemmaCausalLM.from_preset("gemma_2b_en")
+gemma_lm.summary()
+
+print("Before fine-tuning:\n\n")
+
+prompt = template.format(
+    instruction="What should I do on a trip to Europe?",
+    response="",
+)
+print(gemma_lm.generate(prompt, max_length=256))
+
+prompt = template.format(
+    instruction="Explain the process of photosynthesis in a way that a child could understand.",
+    response="",
+)
+print(gemma_lm.generate(prompt, max_length=256))
+
+gemma_lm.backbone.enable_lora(rank=4)
+gemma_lm.summary()
+
+gemma_lm.preprocessor.sequence_length = 512
+optimizer = keras.optimizers.AdamW(
+    learning_rate=5e-5,
+    weight_decay=0.01,
+)
+optimizer.exclude_from_weight_decay(var_names=["bias", "scale"])
+
+gemma_lm.compile(
+    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    optimizer=optimizer,
+    weighted_metrics=[keras.metrics.SparseCategoricalAccuracy()],
+)
+gemma_lm.fit(data, epochs=1, batch_size=1)
+
+model_save_kwargs = {
+    "save_format": "tf",  # Specifies to save in TensorFlow format; alternatives include 'h5' for HDF5
+    "include_optimizer": True,  # Whether to save the optimizer's state as well
+}
+
+gemma_lm.save('finetuned_model.keras', save_format="tf", include_optimizer=True)
+
+# Now, when pushing to the Hugging Face Hub
+from huggingface_hub import push_to_hub_keras
+
+push_to_hub_keras(
+    gemma_lm,
+    "praison/gemma-2b-en-finetuned-databricks-dolly-15k",
+    tags=["gemma-2b-en", "finetuned", "databricks-dolly-15k", "gemma", "lora"],
+    **model_save_kwargs  # This expands to fill in the save arguments for the model
+)
+
+print("After fine-tuning:\n")
+
+prompt = template.format(
+    instruction="What should I do on a trip to Europe?",
+    response="",
+)
+print(gemma_lm.generate(prompt, max_length=256))
+
+prompt = template.format(
+    instruction="Explain the process of photosynthesis in a way that a child could understand.",
+    response="",
+)
+print(gemma_lm.generate(prompt, max_length=256))
+
+
+
+
+
+
+
+
+
+Posts navigation
+← Newer Posts1
+2
+…
+5
+Older Posts →
+
+
+
+
+
+
+
+
+Github Profile
+WordPress Profile
+Kaggle Profile
+
+
+
+
+
+
+
+Recent Posts
+
+
+AutoGen AI Agents To Write Books
+
+
+AutoGenBench AI Agents Evaluation
+
+
+Fine Tuning Doodles Cards on idefics-9b Vision Model
+
+
+GPU Cost Comparison
+
+
+Fine Tuning Pokemon Cards on idefics-9b Vision Model
+
+
+Merge Base Model and PEFT Adapter and Push it to HF Hub
+
+
+Machine Learning Concepts and Techniques
+
+
+Cohere RAG with Reranking
+
+
+Cohere Tools / Function Calling
+
+
+Groq Function Calling
+
+
+Tamil
+Chess
+SEO GPT
+ 
+
+
+
+
+
+
+
+©
+							2024							Mervin Praison
+
+
+
+
+
+
+							To the top ↑ 
+
+							Up ↑ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
