@@ -1,5 +1,3 @@
-clear
-cd ~
 sudo su
 python3
 clear
